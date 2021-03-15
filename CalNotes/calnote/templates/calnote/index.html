@@ -2,5 +2,42 @@
 {% load static %}
 
 {% block body %}
-    <h1>HELLO WORLD</h1>
+    <div id="collapsible-sidenav" class="sidenav list-group-flush">
+        <a href="javascript:void(0)" class="closebtn" onclick="closesidebar()">&#9776;</a>
+        <span class="list-group-item username">Jane Doe <br> @janedoe</span>
+        <a href="#" class="list-group-item list-group-item-action">View All Notes</a>
+        <a href="#" class="list-group-item list-group-item-action">View All Events</a>
+        <a href="#" class="list-group-item list-group-item-action">View All Tasks</a>
+    </div>
+    
+    <div class="row">
+        <div class="col-1 sidebarpane">
+            <span style="font-size:30px;cursor:pointer" onclick="opensidebar()">&#9776;</span>
+        </div>
+        <div class="col tasks">
+            <h1>Tasks</h1>
+            <!-- LIST TASKS VIEW HERE-->
+
+            <!-- View toggle buttons. UNDER CONSTRUCTION by MARIEL -->
+            <!-- <div class="btn-group btn-group-toggle toggleviewbtn" data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked> Notes
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="options" id="option2" autocomplete="off"> Tasks
+                </label>
+            </div> -->
+        </div>
+        <div class="col-3 events">
+            <h1> Calendar </h1>
+            <!-- calendar / event view here -->
+        </div>
+    </div>
+
+    
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'calnote/sidebar.js' %}"></script>
 {% endblock %}
