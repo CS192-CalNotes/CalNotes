@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<head>
-    <title>Add Task</title>
-</head>
-<body>
-    <form>
-        <input type="text" name="Task">
-        <input type="date" name="Due">
+{% extends "calnote/layout.html" %}
+{% block body %}
+    <form method="post">
+        <input type="text" name="task">
+        <input type="date" name="dueDate">
         <input type="submit">
     </form>
-</body>
+ {% endblock %}
