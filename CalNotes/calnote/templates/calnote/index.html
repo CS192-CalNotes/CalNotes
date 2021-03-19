@@ -16,6 +16,21 @@
         </div>
         <div class="col tasks">
             <h1>Tasks</h1>
+            <!-- added by Erwin starts here -->
+            <form action="" method="post" id="taskform">
+                {% csrf_token %}
+                <div class="inputContainer">
+                    <h2>Add Task</h2>
+                    <textarea form="taskform" rows="5" cols="70"></textarea>
+                    <!-- <input type="text" placeholder="Describe Task here" name="task">
+                     test html ko before using textarea to accept task description -->
+                    <br>
+                    <input type="date" name="dueDate">
+                    <br>
+                    <input type="submit">
+                </div>
+            </form>
+            <!-- added by Erwin ends here -->
             <!-- LIST TASKS VIEW HERE-->
 
             <!-- View toggle buttons. UNDER CONSTRUCTION by MARIEL -->
