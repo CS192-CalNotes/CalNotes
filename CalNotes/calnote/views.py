@@ -4,3 +4,7 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, "calnote/index.html")
+
+
+def addNewTask(request):
+    return render(request, "calnote/index.html")
