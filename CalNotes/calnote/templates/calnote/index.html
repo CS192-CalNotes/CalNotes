@@ -4,10 +4,10 @@
 {% block body %}
     <div id="collapsible-sidenav" class="sidenav list-group-flush">
         <a href="javascript:void(0)" class="closebtn" onclick="closesidebar()">&#9776;</a>
-        <span class="list-group-item username">Jane Doe <br> @janedoe</span>
-        <a href="#" class="list-group-item list-group-item-action">View All Notes</a>
-        <a href="#" class="list-group-item list-group-item-action">View All Events</a>
-        <a href="#" class="list-group-item list-group-item-action">View All Tasks</a>
+        <span class="list-group-item menu-item username">Jane Doe <br> @janedoe</span>
+        <a href="#" class="list-group-item list-group-item-action menu-item">View All Notes</a>
+        <a href="#" class="list-group-item list-group-item-action menu-item">View All Events</a>
+        <a href="#" class="list-group-item list-group-item-action menu-item">View All Tasks</a>
     </div>
     
     <div class="row">
@@ -20,19 +20,18 @@
             <!-- Erwin edit starts here -->
             
             <!-- LIST TASKS VIEW HERE-->
-            <ul>
+            <ul class="list-group list-group-flush">
             {%if empty_task_list %}
             <li class="list-group-item"> No active tasks. </li>
             {% else %}
                 {% for task in task_list %}
-                    {% if task.isComplete %}
-                        <li class="list-group-item">{{ task.task }}</li>
-                    {% else %}
-                    {% endif %}
+                    <li class="list-group-item list-group-item-action">
+                        {{ task.task }} | {{ task.dueDate}}
+                    </li>
                 {% endfor %}
             {% endif %}
             </ul>
-
+            <br>
             <form action="{% url  'newtask' %}">
                 <button class="btn btn-primary" type="submit">Add Task</button>
             </form>
