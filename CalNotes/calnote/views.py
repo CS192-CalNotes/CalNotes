@@ -7,19 +7,22 @@ from .forms import AddTaskForm #imports class AddTaskForm from forms.py
 # Create your views here.
 
 def index(request):
-    return render(request, "calnote/index.html")
-
-
-def addNewTask(request):
-    return render(request, "calnote/index.html")
     task_list = Task.objects.order_by('taskID')
-    addtaskform = AddTaskForm()
-    context = {'task_list': task_list, 'form': addtaskform}
+    context = {
+        'task_list': task_list, 
+        'empty_task_list': len(task_list) == 0
+    }
     return render(request, "calnote/index.html", context)
 
-@require_POST
-def addTask(request):
-    addtaskform = AddTaskForm(request.POST)
-    if addtaskform.is_valid():
-        new_addtask = addtaskform.save() #new addtask object
-    return redirect('index')
+def addNewTask(request):
+    if request.method == "POST":
+        addtaskform = AddTaskForm(request.POST)
+        if addtaskform.is_valid():
+            new_addtask = addtaskform.save() #new addtask object
+        return redirect(index)
+    elif request.method == "GET":
+        addtaskform = AddTaskForm(instance=Task())
+        context = {
+            'taskform': addtaskform
+        }
+        return render(request, "calnote/taskform.html", context)

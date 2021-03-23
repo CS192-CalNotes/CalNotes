@@ -14,5 +14,5 @@ class AddTaskForm(forms.ModelForm):
                     'aria-label':'Task',
                     'aria-describedby':'add-btn'}
             ),
-            'dueDate': forms.DateTimeField()
+            'dueDate': forms.DateTimeInput()
         }

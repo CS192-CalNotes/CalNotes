@@ -18,18 +18,25 @@
             <h1>Tasks</h1>
 
             <!-- Erwin edit starts here -->
-            <div class="inputContainer">
-                <form action ="{% url 'addtask' %}" method="POST" role="form">
-                    {% csrf_token %}
-                </form>
-            </div>
+            
             <!-- LIST TASKS VIEW HERE-->
-            {% for task in task_list %}
-                {% if task.isComplete %}
-                    <li class="list-group-item">{{ task.task }}</li>
-                {% else %}
-                {% endif %}
-            {% endfor %}
+            <ul>
+            {%if empty_task_list %}
+            <li class="list-group-item"> No active tasks. </li>
+            {% else %}
+                {% for task in task_list %}
+                    {% if task.isComplete %}
+                        <li class="list-group-item">{{ task.task }}</li>
+                    {% else %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            </ul>
+
+            <form action="{% url  'newtask' %}">
+                <button class="btn btn-primary" type="submit">Add Task</button>
+            </form>
+            
             <!-- Erwin edit ends here -->
 
             <!-- View toggle buttons. UNDER CONSTRUCTION by MARIEL -->
