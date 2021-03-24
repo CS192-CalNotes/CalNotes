@@ -5,6 +5,7 @@ from faker import Faker
 
 fake = Faker()
 
+
 class TaskFormTest(TestCase):
 
     def test_empty_form(self):
@@ -15,10 +16,10 @@ class TaskFormTest(TestCase):
         }
         form = AddTaskForm(data=data)
         self.assertFalse(form.is_valid())
-    
+
     def test_empty_task(self):
         """Test form for empty task name"""
-        
+
         dueDate = timezone.now()
         data = {
             'task': '',
@@ -26,7 +27,7 @@ class TaskFormTest(TestCase):
         }
         form = AddTaskForm(data=data)
         self.assertFalse(form.is_valid())
-    
+
     def test_empty_dueDate(self):
         """Test form for empty due date"""
 
@@ -36,10 +37,10 @@ class TaskFormTest(TestCase):
         }
         form = AddTaskForm(data=data)
         self.assertFalse(form.is_valid())
-        
+
     def test_wrong_date_format(self):
         """Test form for wrong date format"""
-        
+
         dueDate = timezone.now()
         data = {
             'task': fake.text()[0:100],
@@ -47,10 +48,10 @@ class TaskFormTest(TestCase):
         }
         form = AddTaskForm(data=data)
         self.assertFalse(form.is_valid())
-    
+
     def test_valid_form(self):
         """Test form for valid task details"""
-        
+
         dueDate = timezone.now()
         data = {
             'task':  fake.text()[0:100],
@@ -58,4 +59,3 @@ class TaskFormTest(TestCase):
         }
         form = AddTaskForm(data=data)
         self.assertTrue(form.is_valid())
-    
