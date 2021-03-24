@@ -20,9 +20,15 @@ def addNewTask(request):
         if addtaskform.is_valid():
             new_addtask = addtaskform.save() #new addtask object
         return redirect(index)
+
     elif request.method == "GET":
         addtaskform = AddTaskForm(instance=Task())
         context = {
             'taskform': addtaskform
         }
         return render(request, "calnote/taskform.html", context)
+
+def deleteTask(request, task_id):
+    task = Task.objects.get(taskID=task_id)
+    task.delete()
+    return redirect(index)
