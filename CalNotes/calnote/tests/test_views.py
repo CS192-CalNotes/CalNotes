@@ -9,7 +9,7 @@ import time
 
 fake = Faker()
 
-class TaskViewTest(StaticLiveServerTestCase):
+class CreateTaskViewTest(StaticLiveServerTestCase):
     def setUp(self):
         """Setup Chrome driver"""
         options = Options()
@@ -47,10 +47,13 @@ class TaskViewTest(StaticLiveServerTestCase):
 
         self.assertEqual(self.live_server_url + "/",self.driver.current_url)
         
-        # get first child list
-        innerText = self.driver.find_element_by_css_selector("li.list-group-item.list-group-item-action:first-of-type").get_attribute("innerText").strip()
-        parsedDate = dueDate.strftime("%B %#d, %Y, %#H:%M ") + ["p.m.","a.m."][dueDate.strftime("%p") == "AM"]
-        self.assertEqual( ("%s | %s" % (fakeName,parsedDate) ),innerText)
+        # Get rendered values
+        taskName = self.driver.find_element_by_css_selector("td:first-of-type").get_attribute("innerText").strip()
+        self.assertEqual(taskName,fakeName)
+
+        actualDate = self.driver.find_element_by_css_selector("td:nth-of-type(2)").get_attribute("innerText").strip()
+        expectedDate = dueDate.strftime("%B %#d, %Y, %#H:%M ") + ["p.m.","a.m."][dueDate.strftime("%p") == "AM"]
+        self.assertEqual(actualDate, expectedDate)
 
 
     def tearDown(self):
