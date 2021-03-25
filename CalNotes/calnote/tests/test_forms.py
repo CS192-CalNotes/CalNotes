@@ -10,6 +10,7 @@ class TaskFormTest(TestCase):
 
     def test_empty_form(self):
         """Test form for empty data"""
+		
         data = {
             'task': '',
             'dueDate': ''

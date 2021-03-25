@@ -12,10 +12,12 @@ class TaskModelTest(TestCase):
 
     def create_task(self, name, date, isComplete):
         """Utility function for creating task."""
+
         Task.objects.create(task=name, dueDate=date, isComplete=isComplete)
 
     def test_create_task(self):
         """Test for task model creation."""
+		
         fakeName = fake.text()[0:100]
         date = timezone.now()
         isComplete = (True, False)[randint(0, 1)]
