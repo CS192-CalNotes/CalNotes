@@ -10,9 +10,11 @@ def index(request):
     task_list = Task.objects.order_by('taskID')
     context = {
         'task_list': task_list, 
-        'empty_task_list': len(task_list) == 0
+        'empty_task_list': len(task_list) == 0,
+		'len_incomplete_task_list': len([task for task in task_list if not task.isComplete]),
+		'len_complete_task_list': len([task for task in task_list if task.isComplete])
     }
-    return render(request, "calnote/index.html", context)
+    return render(request, "calnote/taskview.html", context)
 
 def addNewTask(request):
     """View to add a new task"""
@@ -38,3 +40,14 @@ def deleteTask(request, task_id):
     task = Task.objects.get(taskID=task_id)
     task.delete()									# Remove from database
     return redirect(index)
+
+def toggleTask(request, task_id):
+	"""View to mark or unmark task as complete"""
+
+	task = Task.objects.get(taskID=task_id)
+	if not task.isComplete:
+		task.isComplete = True
+	else:
+		task.isComplete = False
+	task.save()
+	return redirect(index)
