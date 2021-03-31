@@ -78,3 +78,42 @@
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
+
+.collapsible {
+	max-width: 1000px;
+	overflow: hidden;
+}
+
+.collapsible-label {
+	padding: 15px;
+	font-size: 24px;
+	display: contents;
+	cursor: pointer;
+	position: relative;
+}
+
+.collapsible-label::after {
+	content: '\25bd';
+	padding: 0 15px;
+	float: left;
+	transform: scale(1.5);
+	transition: 0.2s;
+}
+
+.collapsible-content {
+	padding: 20px;
+	color:rgba(0, 0, 0, 0.5);
+	display: block;
+}
+
+.collapsible-button {
+	display: none;
+}
+
+.collapsible-button:checked ~ .collapsible-content {
+	display: none;
+}
+
+.collapsible-button:checked ~ .collapsible-label::after {
+	transform: scale(1.5) rotate(-90deg);
+}
