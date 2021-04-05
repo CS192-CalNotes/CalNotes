@@ -1,0 +1,32 @@
+<div class="calendar">
+    <h1>{{ calendar_month_str }}</h1>
+    <h2>{{ calendar_year_str }}</h2>
+
+    <table>
+        <tr>
+            <th>M</th>
+            <th>T</th>
+            <th>W</th>
+            <th>T</th>
+            <th>F</th>
+            <th>S</th>
+            <th>S</th>
+        </tr>
+        
+        {% for week in calendar_month_range %}
+            <tr>
+                {% for day in week %}
+                    {% if day <= 0 or day > calendar_days %}
+                        <td>&nbsp;</td>
+                    {% else %}
+                        {% if day == calendar_selected %}
+                            <td class="selected">{{ day }}</td>
+                        {% else %}
+                            <td>{{ day }}</td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
