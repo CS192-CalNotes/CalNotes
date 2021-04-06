@@ -6,12 +6,19 @@
 
 .calendar h1 {
   font-weight: bold;
-  font-size: 3rem;
+  font-size: 2rem;
   margin-bottom: 0;
   text-transform: uppercase;
 }
 
+.calendar .heading {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
 .calendar h2 {
+  font-size: 1.8rem;
   margin-top: 0;
   font-family: "Courier New", Courier, monospace;
   font-weight: bold;
@@ -20,13 +27,13 @@
 
 .calendar table {
   width: 252px;
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-left: auto;
   margin-right: auto;
 }
 
 .calendar tr {
-  height: 40px;
+  height: 30px;
 }
 
 .calendar th {
@@ -50,8 +57,8 @@
 
 .calendar td.selected {
   color: #e9e9e9;
-  width: 36px;
-  height: 36px;
+  width: 30px !important;
+  height: 30px !important;
   background-color: red !important;
   font-weight: normal;
   border-radius: 50%;
@@ -61,4 +68,76 @@
   color: #e9e9e9;
   background-color: rgba(255, 255, 255, 0.089);
   border-radius: 50%;
+}
+
+.calendar .events {
+  max-height: 28vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.calendar .actions {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.calendar .new-event {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.calendar .event {
+  text-align: left;
+  display: flex;
+  justify-content: left;
+}
+
+.calendar .marker {
+  margin-left: 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  transform: translateY(2px);
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.calendar .actions .marker {
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  transform: translateY(2px);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: #2d2942;
+  text-align: center;
+  line-height: 17px;
+  font-size: 1.5rem;
+  font-weight: bolder;
+  background-color: #ffc344;
+  border-radius: 50%;
+}
+
+.calendar .label {
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 10px;
+  width: 80%;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: lighter;
+}
+
+.calendar .label:hover {
+  font-weight: normal;
 }

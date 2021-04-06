@@ -1,32 +1,64 @@
 <div class="calendar">
-    <h1>{{ calendar_month_str }}</h1>
-    <h2>{{ calendar_year_str }}</h2>
+  <h1>{{ calendar_month_str }}</h1>
+  <h2>{{ calendar_year_str }}</h2>
 
-    <table>
-        <tr>
-            <th>M</th>
-            <th>T</th>
-            <th>W</th>
-            <th>T</th>
-            <th>F</th>
-            <th>S</th>
-            <th>S</th>
-        </tr>
-        
-        {% for week in calendar_month_range %}
-            <tr>
-                {% for day in week %}
-                    {% if day <= 0 or day > calendar_days %}
-                        <td>&nbsp;</td>
-                    {% else %}
-                        {% if day == calendar_selected %}
-                            <td class="selected">{{ day }}</td>
-                        {% else %}
-                            <td>{{ day }}</td>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+  <table>
+    <tr>
+      <th>M</th>
+      <th>T</th>
+      <th>W</th>
+      <th>T</th>
+      <th>F</th>
+      <th>S</th>
+      <th>S</th>
+    </tr>
+
+    {% for week in calendar_month_range %}
+    <tr>
+      {% for day in week %} {% if day <= 0 or day > calendar_days %}
+      <td>&nbsp;</td>
+      {% else %} {% if day == calendar_selected %}
+      <td class="selected">{{ day }}</td>
+      {% else %}
+      <td>{{ day }}</td>
+      {% endif %} {% endif %} {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h1 class="heading">TODAY'S EVENTS</h1>
+
+  <div class="events">
+    <div class="event">
+      <div class="marker">&nbsp;</div>
+      <div class="label">Event 1</div>
+    </div>
+    <div class="event">
+      <div class="marker">&nbsp;</div>
+      <div class="label">Event 2</div>
+    </div>
+    <div class="event">
+      <div class="marker">&nbsp;</div>
+      <div class="label">Event 3</div>
+    </div>
+    <div class="event">
+      <div class="marker">&nbsp;</div>
+      <div class="label">Event 4</div>
+    </div>
+    <div class="event">
+      <div class="marker">&nbsp;</div>
+      <div class="label">
+        Event 4 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio
+        animi illum, nihil unde aspernatur amet quis sequi ea, fuga maiores
+        distinctio molestiae consequuntur id, cupiditate beatae nam corrupti
+        obcaecati. Natus!
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="event">
+      <div class="marker">&plus;</div>
+      <div class="label">Add Event</div>
+    </div>
+  </div>
 </div>
