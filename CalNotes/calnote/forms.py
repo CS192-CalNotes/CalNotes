@@ -26,9 +26,14 @@ class AddEventForm(forms.ModelForm):
             'name': forms.TextInput(
                 attrs={
                     'class': 'form-control',
-                    'placeholder': 'Enter task here',
-                    'aria-label': 'Task',
+                    'placeholder': 'Enter event here',
+                    'aria-label': 'Event',
                     'aria-describedby': 'add-btn'}
             ),
-            'date': forms.DateTimeInput()
+            'date': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control',
+                    'aria-label': 'Event',
+                    'aria-describedby': 'add-btn'}
+            )
         }

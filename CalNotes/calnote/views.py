@@ -4,8 +4,9 @@ from datetime import datetime
 from calendar import monthrange
 from math import ceil
 
-from .models import Task			# Imports class Task from models.py
-from .forms import AddTaskForm 		# Imports class AddTaskForm from forms.py
+from .models import Task, Event			# Imports class Task from models.py
+# Imports class AddTaskForm from forms.py
+from .forms import AddTaskForm, AddEventForm
 
 
 def index(request):
@@ -17,7 +18,10 @@ def index(request):
         selected_date = datetime.today()
     else:
         selected_date = datetime.strptime(date_query, "%Y-%m-%d")
-    
+
+    date_start = selected_date.replace(hour=0, minute=0, second=0)
+    date_end = selected_date.replace(hour=23, minute=59, second=59)
+
     calendar_month_str = selected_date.strftime("%B")
     calendar_year_str = selected_date.strftime("%Y")
     _, calendar_days = monthrange(selected_date.year, selected_date.month)
@@ -25,7 +29,7 @@ def index(request):
         "%d-%d-1" % (selected_date.year, selected_date.month),
         "%Y-%m-%d"
     ).weekday()
-    
+
     calendar_month_range = [
         [
             (week*7+day-offset+1)
@@ -35,6 +39,8 @@ def index(request):
     ]
 
     task_list = Task.objects.order_by('taskID')
+    event_list = Event.objects.filter(
+        date__gte=date_start, date__lte=date_end).order_by('eventID')
     context = {
         'task_list': task_list,
         'empty_task_list': len(task_list) == 0,
@@ -46,7 +52,8 @@ def index(request):
         'calendar_year_str': calendar_year_str,
         'calendar_month_range': calendar_month_range,
         'calendar_days': calendar_days,
-        'calendar_selected': selected_date.day
+        'calendar_selected': selected_date.day,
+        'event_list': event_list
     }
     return render(request, "calnote/taskview.html", context)
 
@@ -70,11 +77,38 @@ def addNewTask(request):
         return render(request, "calnote/taskform.html", context)
 
 
+def addNewEvent(request):
+    """View to add a new event"""
+
+    # Save event inputs; adds an event to the database
+    if request.method == "POST":
+        addEventForm = AddEventForm(request.POST)
+        if addEventForm.is_valid():
+            new_addEvent = addEventForm.save()		# New addEvent object
+        return redirect(index)
+
+        # Display task input form
+    elif request.method == "GET":
+        addEventForm = AddEventForm(instance=Event())
+        context = {
+            'eventform': addEventForm
+        }
+        return render(request, "calnote/eventform.html", context)
+
+
 def deleteTask(request, task_id):
     """View to remove an existing task"""
 
     task = Task.objects.get(taskID=task_id)
     task.delete()									# Remove from database
+    return redirect(index)
+
+
+def deleteEvent(request, event_id):
+    """View to remove an existing event"""
+
+    event = Event.objects.get(eventID=event_id)
+    event.delete()									# Remove from database
     return redirect(index)
 
 

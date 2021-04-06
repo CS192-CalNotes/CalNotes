@@ -71,21 +71,10 @@
 }
 
 .calendar .events {
+  min-height: 0px;
   max-height: 28vh;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.calendar .actions {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.calendar .new-event {
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -108,7 +97,7 @@
   border-radius: 50%;
 }
 
-.calendar .actions .marker {
+.calendar .action .marker {
   cursor: pointer;
   margin-left: 10px;
   margin-top: auto;
