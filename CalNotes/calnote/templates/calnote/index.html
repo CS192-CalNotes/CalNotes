@@ -18,13 +18,13 @@
             <h1>Tasks</h1>
 
             {%if empty_task_list %}
-				No active tasks. <br><br>
+				<span id="test-removed">No active tasks.</span> <br><br>
 			{% else %}
 
 			{% if len_incomplete_task_list == 0 %}
-				You have no incomplete tasks.
+				<span id="marked-test">You have no incomplete tasks.</span>
 			{% else %}
-				You have {{ len_incomplete_task_list }} incomplete task/s.
+                <span id="marked-test">You have {{ len_incomplete_task_list }} incomplete task/s.</span>
 			{% endif %}
 			<br><br>
 			

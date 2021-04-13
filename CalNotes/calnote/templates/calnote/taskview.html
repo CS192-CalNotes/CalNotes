@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block inc-tasktable %}
-	<table class="table table-hover">
+	<table class="table table-hover" id="task-table">
 		{% for task in task_list %}
-			<tr>
+			<tr id="for-test">
 				{% if not task.isComplete %}
 				<td>
 					<a href="{{task.taskID}}/toggletask">
@@ -42,7 +42,7 @@
 					<tr>
 						{% if task.isComplete %}
 						<td>
-							<a href="{{task.taskID}}/toggletask">
+							<a href="{{task.taskID}}/toggletask" id="test-click">
 							<svg width="30" height="30">
 							<circle cx="15" cy="15" r="12" style="fill:#34eb6e;stroke:green;stroke-width:2;opacity:0.5" />
 							</svg>

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from calnote.models import Task
+from calnote.models import Task, Event
 from faker import Faker
 from django.utils import timezone
 from random import randint
@@ -30,3 +30,24 @@ class TaskModelTest(TestCase):
         self.assertEqual(task.task, fakeName)
         self.assertEqual(task.dueDate.timestamp(), date.timestamp())
         self.assertEqual(task.isComplete, isComplete)
+
+class EventModelTest(TestCase):
+
+    def create_event(self, name, date):
+        """Utility function for creating event."""
+
+        Event.objects.create(name=name, date=date)
+
+    def test_create_event(self):
+        """Test for event model creation."""
+		
+        fakeName = fake.text()[0:100]
+        date = timezone.now()
+
+        self.create_event(fakeName, date)
+
+        event = Event.objects.get(name=fakeName)
+        self.assertTrue(isinstance(event, Event))
+        self.assertNotEqual(getattr(event, "eventID", False), False)
+        self.assertEqual(event.name, fakeName)
+        self.assertEqual(event.date.timestamp(), date.timestamp())
