@@ -1,7 +1,7 @@
 from django import forms
 from .models import Task, Event
 
-
+#Attributes of forms needed
 class AddTaskForm(forms.ModelForm):
     class Meta:
         model = Task

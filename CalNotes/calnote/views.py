@@ -100,7 +100,7 @@ def deleteTask(request, task_id):
     """View to remove an existing task"""
 
     task = Task.objects.get(taskID=task_id)
-    task.delete()									# Remove from database
+    task.delete()									# Remove Task from database
     return redirect(index)
 
 
@@ -108,7 +108,7 @@ def deleteEvent(request, event_id):
     """View to remove an existing event"""
 
     event = Event.objects.get(eventID=event_id)
-    event.delete()									# Remove from database
+    event.delete()									# Remove Event from database
     return redirect(index)
 
 
