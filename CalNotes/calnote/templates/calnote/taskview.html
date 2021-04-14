@@ -1,68 +1,88 @@
-{% extends "calnote/index.html" %}
-{% load static %}
+<!-- TASK column, shows the task tables -->
 
-{% block inc-tasktable %}
-	<table class="table table-hover" id="task-table">
-		{% for task in task_list %}
-			<tr id="for-test">
-				{% if not task.isComplete %}
-				<td>
-					<a href="{{task.taskID}}/toggletask">
-					<svg width="30" height="30">
-					<circle cx="15" cy="15" r="12" style="fill:none;stroke:black;stroke-width:3;opacity:0.2" />
+{%if empty_task_list %}
+	<span id="test-removed">No active tasks.</span> <br><br>
+{% else %}
+
+{% if len_incomplete_task_list == 0 %}
+	<span id="marked-test">You have no incomplete tasks.</span>
+{% else %}
+	<span id="marked-test">You have {{ len_incomplete_task_list }} incomplete task/s.</span>
+{% endif %}
+<br><br>
+
+<!-- list of incomplete tasks -->
+<table class="table table-hover" id="task-table">
+	{% for task in task_list %}
+		<tr id="for-test">
+			{% if not task.isComplete %}
+			<td>
+				<a href="{{task.taskID}}/toggletask">
+				<svg width="30" height="30">
+				<circle cx="15" cy="15" r="12" style="fill:none;stroke:black;stroke-width:3;opacity:0.2" />
+				</svg>
+				</a>
+			</td>
+			<td>{{ task.task }}</td>
+			<td>{{ task.dueDate}} </td>
+			<td>
+				<a href="{{task.taskID}}/deletetask">
+					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#f83a26" class="bi bi-trash" viewBox="0 0 20 20">
+					<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+					<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
 					</svg>
-					</a>
-				</td>
-				<td>{{ task.task }}</td>
-				<td>{{ task.dueDate}} </td>
-				<td>
-					<a href="{{task.taskID}}/deletetask">
-						<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#f83a26" class="bi bi-trash" viewBox="0 0 20 20">
-						<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-						<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-						</svg>
-					</a>
-				</td>
-				{% endif %}
-			</tr>
-		{% endfor %}
-	</table>
-{% endblock %}
-
-{% block comp-tasktable %}
-	<div class='collapsible'>
-		<div>
-		<input type='checkbox' name='collapsible' id='completed-tasks' class='collapsible-button'>
-		<label for='completed-tasks' class='collapsible-label'>Completed Tasks</label>
-			{% if len_complete_task_list == 0 %}
-				<div class='collapsible-content'>You have no completed tasks.</div>
-			{% else %}
-			<table class="table table-hover collapsible-content">
-				{% for task in task_list %}
-					<tr>
-						{% if task.isComplete %}
-						<td>
-							<a href="{{task.taskID}}/toggletask" id="test-click">
-							<svg width="30" height="30">
-							<circle cx="15" cy="15" r="12" style="fill:#34eb6e;stroke:green;stroke-width:2;opacity:0.5" />
-							</svg>
-							</a>
-						</td>
-						<td>{{ task.task }}</td>
-						<td>{{ task.dueDate}} </td>
-						<td>
-							<a href="{{task.taskID}}/deletetask">
-								<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#f83a26" class="bi bi-trash" viewBox="0 0 20 20">
-								<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-								<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-								</svg>
-							</a>
-						</td>
-						{% endif %}
-					</tr>
-				{% endfor %}
-			</table>
+				</a>
+			</td>
 			{% endif %}
-		</div>
+		</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+<!-- add new task button-->
+<br>
+<form action="{% url 'newtask' %}">
+	<button class="btn btn-primary" type="submit">
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-pen" viewBox=" 1 16 16">
+		<path d="M13.498.795l.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+		</svg>
+		Add New Task
+	</button>
+</form><br>
+
+<!-- list of completed tasks -->
+<div class='collapsible'>
+	<div>
+	<input type='checkbox' name='collapsible' id='completed-tasks' class='collapsible-button'>
+	<label for='completed-tasks' class='collapsible-label'>Completed Tasks</label>
+		{% if len_complete_task_list == 0 %}
+			<div class='collapsible-content'>You have no completed tasks.</div>
+		{% else %}
+		<table class="table table-hover collapsible-content">
+			{% for task in task_list %}
+				<tr>
+					{% if task.isComplete %}
+					<td>
+						<a href="{{task.taskID}}/toggletask" id="test-click">
+						<svg width="30" height="30">
+						<circle cx="15" cy="15" r="12" style="fill:#34eb6e;stroke:green;stroke-width:2;opacity:0.5" />
+						</svg>
+						</a>
+					</td>
+					<td>{{ task.task }}</td>
+					<td>{{ task.dueDate}} </td>
+					<td>
+						<a href="{{task.taskID}}/deletetask">
+							<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#f83a26" class="bi bi-trash" viewBox="0 0 20 20">
+							<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+							<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+							</svg>
+						</a>
+					</td>
+					{% endif %}
+				</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
 	</div>
-{% endblock %}
+</div>

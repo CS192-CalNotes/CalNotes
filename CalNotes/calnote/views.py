@@ -55,7 +55,7 @@ def index(request):
         'calendar_selected': selected_date.day,
         'event_list': event_list
     }
-    return render(request, "calnote/taskview.html", context)
+    return render(request, "calnote/index.html", context)
 
 
 def addNewTask(request):
