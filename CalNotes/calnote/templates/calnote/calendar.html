@@ -33,7 +33,7 @@ shows the usual look of a calendar of made of rows and columns-->
   <div class="events">
     {% for event in event_list %}
     <div class="event">
-      <div class="marker">&nbsp;</div>
+      <div class="marker" id="test-marker">&nbsp;</div>
       <a
         class="label"
         id="dropdownMenuLink"
@@ -45,13 +45,13 @@ shows the usual look of a calendar of made of rows and columns-->
       </a>
 
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <a class="dropdown-item" href="{{event.eventID}}/deleteEvent">Remove</a>
+        <a class="dropdown-item" id="remove-event" href="{{event.eventID}}/deleteEvent">Remove</a>
       </div>
     </div>
     {% endfor %}
 
     <div class="event action">
-      <div class="marker">&plus;</div>
+      <div class="marker" id="test-marker">&plus;</div>
       <a href="{% url 'newevent' %}" class="label">Add Event</a>
     </div>
   </div>
