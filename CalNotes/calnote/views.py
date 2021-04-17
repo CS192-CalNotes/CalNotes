@@ -59,6 +59,51 @@ def index(request):
     }
     return render(request, "calnote/index.html", context)
 
+def viewNotes(request):
+    """Notes View"""
+
+    # Parse date URL query
+    date_query = request.GET.get('date')
+    if date_query == None:
+        selected_date = datetime.today()
+    else:
+        selected_date = datetime.strptime(date_query, "%Y-%m-%d")
+
+    date_start = selected_date.replace(hour=0, minute=0, second=0)
+    date_end = selected_date.replace(hour=23, minute=59, second=59)
+
+    calendar_month_str = selected_date.strftime("%B")
+    calendar_year_str = selected_date.strftime("%Y")
+    _, calendar_days = monthrange(selected_date.year, selected_date.month)
+    offset = datetime.strptime(
+        "%d-%d-1" % (selected_date.year, selected_date.month),
+        "%Y-%m-%d"
+    ).weekday()
+
+    calendar_month_range = [
+        [
+            (week*7+day-offset+1)
+            for day in range(7)
+        ]
+        for week in range(ceil((offset+calendar_days)/7))
+    ]
+
+    note_list = Note.objects.order_by('noteID')
+    event_list = Event.objects.filter(
+        date__gte=date_start, date__lte=date_end).order_by('eventID')
+    context = {
+        'note_list': note_list,
+        'empty_note_list': len(note_list) == 0,
+
+        # Calendar contexts
+        'calendar_month_str': calendar_month_str,
+        'calendar_year_str': calendar_year_str,
+        'calendar_month_range': calendar_month_range,
+        'calendar_days': calendar_days,
+        'calendar_selected': selected_date.day,
+        'event_list': event_list
+    }
+    return render(request, "calnote/notesview.html", context)
 
 def addNewTask(request):
     """View to add a new task"""
@@ -134,7 +179,7 @@ def addNewNote(request):
         addNoteForm = AddNoteForm(request.POST)
         if addNoteForm.is_valid():
             new_addNote = addNoteForm.save()		# New addnote object
-        return redirect(index)
+        return redirect(viewNotes)
 
         # Display note input form
     elif request.method == "GET":
@@ -145,9 +190,9 @@ def addNewNote(request):
         return render(request, "calnote/noteform.html", context)
 
 
-def deleteNote(request, event_id):
+def deleteNote(request, note_id):
     """View to remove an existing event"""
 
     note = Note.objects.get(noteID=note_id)
     note.delete()									# Remove Event from database
-    return redirect(index)
+    return redirect(viewNotes)
