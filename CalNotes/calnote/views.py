@@ -3,11 +3,13 @@ from django.views.decorators.http import require_POST
 from datetime import datetime
 from calendar import monthrange
 from math import ceil
+from markdown2 import Markdown
 
-from .models import Task, Event			# Imports class Task from models.py
+from .models import Task, Event, Note		# Imports class Task from models.py
 # Imports class AddTaskForm from forms.py
-from .forms import AddTaskForm, AddEventForm
+from .forms import AddTaskForm, AddEventForm, AddNoteForm
 
+markdowner = Markdown()
 
 def index(request):
     """Main view: shows the task listing by default."""
@@ -121,4 +123,31 @@ def toggleTask(request, task_id):
     else:
         task.isComplete = False
     task.save()
+    return redirect(index)
+
+
+def addNewNote(request):
+    """View to add a new note"""
+
+    # Save note inputs; adds a note to the database
+    if request.method == "POST":
+        addNoteForm = AddNoteForm(request.POST)
+        if addNoteForm.is_valid():
+            new_addNote = addNoteForm.save()		# New addnote object
+        return redirect(index)
+
+        # Display note input form
+    elif request.method == "GET":
+        addNoteForm = AddNoteForm(instance=Note())
+        context = {
+            'noteform': addNoteForm
+        }
+        return render(request, "calnote/noteform.html", context)
+
+
+def deleteNote(request, event_id):
+    """View to remove an existing event"""
+
+    note = Note.objects.get(noteID=note_id)
+    note.delete()									# Remove Event from database
     return redirect(index)

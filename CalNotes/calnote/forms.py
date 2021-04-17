@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task, Event
+from .models import Task, Event, Note
 
 #Attributes of forms needed
 class AddTaskForm(forms.ModelForm):
@@ -28,6 +28,26 @@ class AddEventForm(forms.ModelForm):
                     'class': 'form-control',
                     'placeholder': 'Enter event here',
                     'aria-label': 'Event',
+                    'aria-describedby': 'add-btn'}
+            ),
+            'date': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control',
+                    'aria-label': 'Event',
+                    'aria-describedby': 'add-btn'}
+            )
+        }
+
+class AddNoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = ['note', 'date']
+        widgets = {
+            'note': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter note here',
+                    'aria-label': 'Note',
                     'aria-describedby': 'add-btn'}
             ),
             'date': forms.DateTimeInput(
