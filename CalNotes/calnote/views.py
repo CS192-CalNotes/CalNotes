@@ -5,8 +5,8 @@ from calendar import monthrange
 from math import ceil
 
 from .models import Task, Event			# Imports class Task from models.py
-# Imports class AddTaskForm from forms.py
-from .forms import AddTaskForm, AddEventForm
+# Imports forms from forms.py
+from .forms import TaskForm, AddEventForm
 
 
 def index(request):
@@ -63,16 +63,17 @@ def addNewTask(request):
 
     # Save task inputs; adds a task to the database
     if request.method == "POST":
-        addtaskform = AddTaskForm(request.POST)
+        addtaskform = TaskForm(request.POST)
         if addtaskform.is_valid():
             new_addtask = addtaskform.save()		# New addtask object
         return redirect(index)
 
-        # Display task input form
+    # Display task input form
     elif request.method == "GET":
-        addtaskform = AddTaskForm(instance=Task())
+        addtaskform = TaskForm(instance=Task())
         context = {
-            'taskform': addtaskform
+            'taskform': addtaskform,
+			'action': 'Add a New Task'
         }
         return render(request, "calnote/taskform.html", context)
 
