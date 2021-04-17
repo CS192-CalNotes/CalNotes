@@ -123,3 +123,21 @@ def toggleTask(request, task_id):
         task.isComplete = False
     task.save()
     return redirect(index)
+
+
+def editTask(request, task_id):
+	"""View to edit a task"""
+
+	task = Task.objects.get(taskID=task_id)
+	if request.method == "POST":
+		editTaskForm = TaskForm(request.POST or None, instance=task)
+		if editTaskForm.is_valid():
+			currentTask = editTaskForm.save()
+		return redirect(index)
+
+	elif request.method == "GET":
+		context = {
+			'taskform': TaskForm(instance=task),
+			'action': 'Edit Existing Task'
+		}
+		return render(request, "calnote/taskform.html", context)
