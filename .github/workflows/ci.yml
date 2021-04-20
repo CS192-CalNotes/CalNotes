@@ -32,8 +32,8 @@ jobs:
         run: python --version
       - name: Install requirements # install application requirements
         run: pip install -r requirements.txt
-      # - name: Lint # check code formatting
-      #   run: pylint CalNotes/calnote
+      - name: Lint # check code formatting
+        run: pylint CalNotes/calnote
       - name: Run Migrations # run migrations to create table in side car db container
         run: python CalNotes/manage.py migrate
       - name: Run Test # running tests
