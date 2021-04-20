@@ -35,4 +35,4 @@ jobs:
       - name: Run Migrations # run migrations to create table in side car db container
         run: python CalNotes/manage.py migrate
       - name: Run Test # running tests
-        run: python CalNotes/manage.py test
+        run: python CalNotes/manage.py test calnote
