@@ -33,6 +33,6 @@ jobs:
       # - name: Lint # check code formatting
       #   run: pylint CalNotes/calnote
       - name: Run Migrations # run migrations to create table in side car db container
-        run: python manage.py migrate
+        run: python CalNotes/manage.py migrate
       - name: Run Test # running tests
-        run: python manage.py test
+        run: python CalNotes/manage.py test
