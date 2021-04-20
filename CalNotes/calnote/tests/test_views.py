@@ -1,3 +1,4 @@
+import os
 from faker import Faker
 from datetime import datetime
 from calnote.models import Task, Event
@@ -23,7 +24,8 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         """Setup Chrome driver"""
 
         options = Options()
-        # options.add_argument('--headless')
+        if "PY_ENV" in os.environ and os.environ["PY_ENV"] == "test":
+            options.add_argument('--headless')
         options.add_argument("--log-level=OFF")
         self.driver = webdriver.Chrome(
             ChromeDriverManager().install(), chrome_options=options)
@@ -31,7 +33,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
 
     def test_create_task(self):
         """Integration test for task creation."""
-		
+
         url = "%s%s" % (self.live_server_url, "/newtask")
         self.driver.get(url)
         time.sleep(2)
@@ -90,7 +92,8 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         time.sleep(2)
 
         # Get rendered values
-        linkButton = self.driver.find_element_by_css_selector("td:first-of-type > a")
+        linkButton = self.driver.find_element_by_css_selector(
+            "td:first-of-type > a")
         linkButton.click()
         time.sleep(2)
 
@@ -100,7 +103,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         message = self.driver.find_element_by_id(
             "marked-test").get_attribute("innerText").strip()
         self.assertEqual(message, "You have no incomplete tasks.")
-    
+
     def test_unmark_task(self):
         """Integration test for mark task."""
 
@@ -144,7 +147,8 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         time.sleep(2)
 
         # Get rendered values
-        linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(4) > a")
+        linkButton = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(4) > a")
         linkButton.click()
         time.sleep(2)
 
@@ -154,15 +158,13 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         message = self.driver.find_element_by_id(
             "test-removed").get_attribute("innerText").strip()
         self.assertEqual(message, "No active tasks.")
-    
 
     def tearDown(self):
         """Close chrome driver"""
-		
+
         time.sleep(2)
         self.driver.stop_client()
         self.driver.close()
-
 
 
 class CreateEventViewTest(StaticLiveServerTestCase):
@@ -176,7 +178,10 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         """Setup Chrome driver"""
 
         options = Options()
-        # options.add_argument('--headless')
+
+        if "PY_ENV" in os.environ and os.environ["PY_ENV"] == "test":
+            options.add_argument('--headless')
+
         options.add_argument("--log-level=OFF")
         self.driver = webdriver.Chrome(
             ChromeDriverManager().install(), chrome_options=options)
@@ -184,7 +189,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
     def test_create_event(self):
         """Integration test for event creation."""
-		
+
         url = "%s%s" % (self.live_server_url, "/newevent")
         self.driver.get(url)
         time.sleep(2)
@@ -260,7 +265,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
     def tearDown(self):
         """Close chrome driver"""
-		
+
         time.sleep(2)
         self.driver.stop_client()
         self.driver.close()

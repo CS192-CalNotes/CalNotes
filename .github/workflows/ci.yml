@@ -12,6 +12,8 @@ on:
 jobs:
   ci: # health check job for testing and code formatting check
     runs-on: ubuntu-latest # os for running the job
+    env:
+      PY_ENV: test
     steps:
       - name: Checkout code # checking our the code at current commit that triggers the workflow
         uses: actions/checkout@v2
