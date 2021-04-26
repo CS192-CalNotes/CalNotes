@@ -35,9 +35,15 @@ def index(request):
         "%Y-%m-%d"
     ).weekday()
 
+    month_events = Event.objects.filter(
+        date__gte=date_start.replace(day=1), date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
+    has_event = {}
+    for event in month_events:
+        has_event[event.date.day-1] = True
+
     calendar_month_range = [
         [
-            (week*7+day-offset+1)
+            (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
             for day in range(7)
         ]
         for week in range(ceil((offset+calendar_days)/7))
@@ -46,6 +52,7 @@ def index(request):
     task_list = Task.objects.order_by('taskID')
     event_list = Event.objects.filter(
         date__gte=date_start, date__lte=date_end).order_by('eventID')
+
     context = {
         'task_list': task_list,
         'empty_task_list': len(task_list) == 0,
@@ -66,6 +73,7 @@ def index(request):
         'event_list': event_list,
         'calendar_prev_month_idx': calendar_prev_month_idx,
         'calendar_next_month_idx': calendar_next_month_idx,
+        'has_event': has_event
     }
     return render(request, "calnote/index.html", context)
 

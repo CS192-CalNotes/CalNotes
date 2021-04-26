@@ -45,17 +45,29 @@ shows the usual look of a calendar of made of rows and columns-->
 
     {% for week in calendar_month_range %}
     <tr>
-      {% for day in week %} {% if day <= 0 or day > calendar_days %}
-      <td>&nbsp;</td>
-      {% else %} {% if day == calendar_selected %}
-      <td class="selected">{{ day }}</td>
-      {% else %}
-      <td>
-        <a href="?date={{calendar_year}}-{{calendar_month}}-{{day}}">
-          {{ day }}
-        </a>
-      </td>
-      {% endif %} {% endif %} {% endfor %}
+      {% for day,has_event in week %} 
+        {% if day <= 0 or day > calendar_days %}
+          <td>&nbsp;</td>
+        {% else %} 
+        {% if day == calendar_selected %}
+          <td class="selected">{{ day }}</td>
+        {% else %}
+        {% if has_event %}
+          <td>
+            <a  class="has-event" href="?date={{calendar_year}}-{{calendar_month}}-{{day}}">
+              {{ day }}
+            </a>
+          </td>
+        {% else %}
+          <td>
+            <a href="?date={{calendar_year}}-{{calendar_month}}-{{day}}">
+              {{ day }}
+            </a>
+          </td>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+      {% endfor %}
     </tr>
     {% endfor %}
   </table>
