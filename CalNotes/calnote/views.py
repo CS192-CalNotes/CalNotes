@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from datetime import datetime
-from calendar import monthrange
+from calendar import monthrange, month_abbr
 from math import ceil
 
 from .models import Task, Event			# Imports class Task from models.py
@@ -14,7 +14,7 @@ def index(request):
 
     # Parse date URL query
     date_query = request.GET.get('date')
-    if date_query == None:
+    if date_query is None:
         selected_date = datetime.today()
     else:
         selected_date = datetime.strptime(date_query, "%Y-%m-%d")
@@ -24,6 +24,11 @@ def index(request):
 
     calendar_month_str = selected_date.strftime("%B")
     calendar_year_str = selected_date.strftime("%Y")
+    calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
+    calendar_next_month_idx = (selected_date.month) % 12 + 1
+    calendar_prev_month = month_abbr[calendar_prev_month_idx]
+    calendar_next_month = month_abbr[calendar_next_month_idx]
+
     _, calendar_days = monthrange(selected_date.year, selected_date.month)
     offset = datetime.strptime(
         "%d-%d-1" % (selected_date.year, selected_date.month),
@@ -49,11 +54,18 @@ def index(request):
 
         # Calendar contexts
         'calendar_month_str': calendar_month_str,
+        'calendar_month': selected_date.month,
+        'calendar_year': selected_date.year,
         'calendar_year_str': calendar_year_str,
         'calendar_month_range': calendar_month_range,
         'calendar_days': calendar_days,
         'calendar_selected': selected_date.day,
-        'event_list': event_list
+        'calendar_today': datetime.today().strftime("%Y-%m-%d"),
+        'calendar_prev_month': calendar_prev_month,
+        'calendar_next_month': calendar_next_month,
+        'event_list': event_list,
+        'calendar_prev_month_idx': calendar_prev_month_idx,
+        'calendar_next_month_idx': calendar_next_month_idx,
     }
     return render(request, "calnote/index.html", context)
 
