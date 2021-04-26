@@ -43,12 +43,14 @@ class AddNoteForm(forms.ModelForm):
         model = Note
         fields = ['note', 'date']
         widgets = {
-            'note': forms.TextInput(
+            'note': forms.Textarea(
                 attrs={
                     'class': 'form-control',
                     'placeholder': 'Enter note here',
                     'aria-label': 'Note',
-                    'aria-describedby': 'add-btn'}
+                    'aria-describedby': 'add-btn',
+                    "rows":5, 
+                    "cols":20}
             ),
             'date': forms.DateTimeInput(
                 attrs={

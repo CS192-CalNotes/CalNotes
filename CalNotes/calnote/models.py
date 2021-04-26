@@ -30,7 +30,7 @@ class Note(models.Model):
     """Note object fields"""
 
     noteID = models.AutoField(primary_key=True)
-    note = models.CharField(max_length = 256)
+    note = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now, null=True,blank=True)
 
     def __str__(self):

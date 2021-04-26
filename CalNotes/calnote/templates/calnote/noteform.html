@@ -1,22 +1,23 @@
-{% extends "calnote/layout.html" %}
+{% extends "calnote/layout.html" %} 
 
-{% block body %}
+{% block body %} 
 
-<div class="container">
+<div class="col">
     <h1>Add a New Note</h1>
     <form action ="" method="POST" >
         {% csrf_token %}
         <div class="form-row">
+            <div class="form-group col-md-3">
+                <label>Date</label> 
+                <br>
+                {{ noteform.date }}
+            </div>          
+        </div>
+        <div class="form-row">
             <div class="form-group col-md-6">
                 <label>Note</label> 
                 {{ noteform.note }}
-            </div>
-
-            <div class="form-group col-md-6">
-                <label>Due date</label> 
-                <br>
-                {{ noteform.date }}
-            </div>
+            </div>  
         </div>
         <input class="btn btn-outline-primary" type="submit" value="Add Note">
     </form>
