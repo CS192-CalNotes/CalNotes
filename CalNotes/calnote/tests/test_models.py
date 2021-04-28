@@ -17,7 +17,7 @@ class TaskModelTest(TestCase):
 
     def test_create_task(self):
         """Test for task model creation."""
-		
+
         fakeName = fake.text()[0:100]
         date = timezone.now()
         isComplete = (True, False)[randint(0, 1)]
@@ -40,7 +40,7 @@ class EventModelTest(TestCase):
 
     def test_create_event(self):
         """Test for event model creation."""
-		
+
         fakeName = fake.text()[0:100]
         date = timezone.now()
 

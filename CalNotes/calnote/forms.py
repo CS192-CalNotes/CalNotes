@@ -2,7 +2,7 @@ from django import forms
 from .models import Task, Event, Note
 
 #Attributes of forms needed
-class AddTaskForm(forms.ModelForm):
+class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['task', 'dueDate']

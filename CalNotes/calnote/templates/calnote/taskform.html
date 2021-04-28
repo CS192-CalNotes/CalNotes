@@ -2,8 +2,8 @@
 
 {% block body %}x
 
-<div class="col">
-    <h1>Add a New Task</h1>
+<div class="container">
+    <h1>{{ action }}</h1>
     <form action ="" method="POST" >
         {% csrf_token %}
         <div class="form-row">
@@ -18,7 +18,7 @@
                 {{ taskform.dueDate }}
             </div>
         </div>
-        <input class="btn btn-outline-primary" type="submit" value="Add Task">
+        <input class="btn btn-outline-primary" type="submit" value="Confirm">
     </form>
 </div>
 {% endblock %}

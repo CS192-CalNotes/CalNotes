@@ -6,8 +6,8 @@ from math import ceil
 from markdown2 import Markdown
 
 from .models import Task, Event, Note		# Imports class Task from models.py
-# Imports class AddTaskForm from forms.py
-from .forms import AddTaskForm, AddEventForm, AddNoteForm
+# Imports forms from forms.py
+from .forms import TaskForm, AddEventForm, AddNoteForm
 
 markdowner = Markdown()
 
@@ -130,16 +130,17 @@ def addNewTask(request):
 
     # Save task inputs; adds a task to the database
     if request.method == "POST":
-        addtaskform = AddTaskForm(request.POST)
+        addtaskform = TaskForm(request.POST)
         if addtaskform.is_valid():
             new_addtask = addtaskform.save()		# New addtask object
         return redirect(index)
 
-        # Display task input form
+    # Display task input form
     elif request.method == "GET":
-        addtaskform = AddTaskForm(instance=Task())
+        addtaskform = TaskForm(instance=Task())
         context = {
-            'taskform': addtaskform
+            'taskform': addtaskform,
+			      'action': 'Add a New Task'
         }
         return render(request, "calnote/taskform.html", context)
 
@@ -189,6 +190,24 @@ def toggleTask(request, task_id):
         task.isComplete = False
     task.save()
     return redirect(index)
+
+
+def editTask(request, task_id):
+    """View to edit a task"""
+
+    task = Task.objects.get(taskID=task_id)
+    if request.method == "POST":
+        editTaskForm = TaskForm(request.POST or None, instance=task)
+        if editTaskForm.is_valid():
+            editTaskForm.save()
+        return redirect(index)
+
+    elif request.method == "GET":
+        context = {
+            'taskform': TaskForm(instance=task),
+            'action': 'Edit Existing Task'
+        }
+        return render(request, "calnote/taskform.html", context)
 
 
 def addNewNote(request):
