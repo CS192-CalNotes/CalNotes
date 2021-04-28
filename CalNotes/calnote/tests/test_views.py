@@ -13,23 +13,23 @@ from selenium.webdriver.chrome.options import Options
 fake = Faker()
 
 
- class CreateTaskViewTest(StaticLiveServerTestCase):
+class CreateTaskViewTest(StaticLiveServerTestCase):
 
-     def create_task(self, name, date, isComplete):
-         """Utility function for creating task."""
+    def create_task(self, name, date, isComplete):
+        """Utility function for creating task."""
 
-         Task.objects.create(task=name, dueDate=date, isComplete=isComplete)
+        Task.objects.create(task=name, dueDate=date, isComplete=isComplete)
 
-#     def setUp(self):
-#         """Setup Chrome driver"""
+    def setUp(self):
+        """Setup Chrome driver"""
 
-#         options = Options()
-#         if "PY_ENV" in os.environ and os.environ["PY_ENV"] == "test":
-#             options.add_argument('--headless')
-#         options.add_argument("--log-level=OFF")
-#         self.driver = webdriver.Chrome(
-#             ChromeDriverManager().install(), chrome_options=options)
-#         self.driver.implicitly_wait(5)
+        options = Options()
+        if "PY_ENV" in os.environ and os.environ["PY_ENV"] == "test":
+            options.add_argument('--headless')
+        options.add_argument("--log-level=OFF")
+        self.driver = webdriver.Chrome(
+            ChromeDriverManager().install(), chrome_options=options)
+        self.driver.implicitly_wait(5)
 
 #     def test_create_task(self):
 #         """Integration test for task creation."""
