@@ -1,8 +1,9 @@
 {% extends "calnote/layout.html" %}
+{% load static %}
 
-{% block body %}x
+{% block body %}
 
-<div class="container">
+<div class="col">
     <h1>{{ action }}</h1>
     <form action ="" method="POST" >
         {% csrf_token %}

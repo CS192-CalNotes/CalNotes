@@ -36,7 +36,7 @@ class TaskFormTest(TestCase):
             'dueDate': ''
         }
         form = TaskForm(data=data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
     def test_wrong_date_format(self):
         """Test form for wrong date format"""
