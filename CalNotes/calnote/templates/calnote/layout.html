@@ -12,10 +12,44 @@
     />
     <link rel="stylesheet" href="static/calnote/styles.css?{% now "U" %}"/>
     <link rel="stylesheet" href="static/calnote/calendar.css?{% now "U" %}"/>
-    {%block script %} {% endblock %}
+    <!-- {%block script %} {% endblock %} -->
+    <script src="{% static 'calnote/sidebar.js' %}"></script>
   </head>
   <body>
-    <div class="container-fluid">{% block body %} {% endblock %}</div>
+    
+    <div class="container-fluid"> 
+      <div id="collapsible-sidenav" class="sidenav list-group-flush">
+        <a href="javascript:void(0)" class="closebtn" onclick="closesidebar()">&#9776;</a>
+        <span class="list-group-item menu-item username">Jane Doe <br> @janedoe</span>
+        <a href="{% url 'viewnotes' %}" class="list-group-item list-group-item-action menu-item">View All Notes</a>
+        <a href="#" class="list-group-item list-group-item-action menu-item">View All Events</a>
+        <a href="{% url 'index' %}" class="list-group-item list-group-item-action menu-item">View All Tasks</a>
+      </div>
+
+      <div class="row">
+        <div class="col-1 sidebarpane">
+            <span style="font-size:30px;cursor:pointer" onclick="opensidebar()">&#9776;</span>
+        </div>
+        
+        
+          <!-- <div class="row">
+            <div class="col">
+              <div class="btn-group btn-group-toggle toggleviewbtn" data-toggle="buttons">
+                  <label class="btn btn-secondary active">
+                      <input type="radio" name="options" id="option1" autocomplete="off" checked> Notes
+                  </label>
+                  <label class="btn btn-secondary">
+                      <input type="radio" name="options" id="option2" autocomplete="off"> Tasks
+                  </label>
+              </div> 
+            </div>
+          </div> -->
+
+          {% block body %} {% endblock %}
+
+      </div>
+    </div>
+
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"

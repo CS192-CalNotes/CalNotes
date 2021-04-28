@@ -8,4 +8,7 @@ urlpatterns = [
     path("<str:task_id>/toggletask", views.toggleTask, name="toggletask"),
     path("newevent", views.addNewEvent, name="newevent"),
     path("<str:event_id>/deleteEvent", views.deleteEvent, name="deleteEvent"),
+    path("newnote", views.addNewNote, name="newnote"),
+    path("<str:note_id>/deleteNote", views.deleteNote, name="deleteNote"),
+    path("notes", views.viewNotes, name="viewnotes"),
 ]
