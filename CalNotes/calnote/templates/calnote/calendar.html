@@ -1,8 +1,36 @@
 <!-- CALENDAR of the application
 shows the usual look of a calendar of made of rows and columns-->
 <div class="calendar">
+  <div class="heading"></div>
   <h1>{{ calendar_month_str }}</h1>
   <h2>{{ calendar_year_str }}</h2>
+
+  <div class="controls">
+    <div class="nav-but">
+      {% if calendar_prev_month_idx == 12 %}
+      <a href="?date={{calendar_year|add:"-1"}}-{{calendar_prev_month_idx}}-1"
+        >&#8592; {{calendar_prev_month}}</a
+      >
+      {% else %}
+      <a href="?date={{calendar_year}}-{{calendar_prev_month_idx}}-1"
+        >&#8592; {{calendar_prev_month}}</a
+      >
+      {% endif %}
+    </div>
+    <div class="reset"><a href="?date={{calendar_today}}">Today</a></div>
+    <div class="nav-but">
+      
+      {% if calendar_next_month_idx == 1 %}
+      <a href="?date={{calendar_year|add:"1"}}-{{calendar_next_month_idx}}-1"
+        >{{calendar_next_month}} &#8594;</a
+      >
+      {% else %}
+      <a href="?date={{calendar_year}}-{{calendar_next_month_idx}}-1"
+        >{{calendar_next_month}} &#8594;</a
+      >
+      {% endif %}
+    </div>
+  </div>
 
   <table>
     <tr>
@@ -17,13 +45,29 @@ shows the usual look of a calendar of made of rows and columns-->
 
     {% for week in calendar_month_range %}
     <tr>
-      {% for day in week %} {% if day <= 0 or day > calendar_days %}
-      <td>&nbsp;</td>
-      {% else %} {% if day == calendar_selected %}
-      <td class="selected">{{ day }}</td>
-      {% else %}
-      <td>{{ day }}</td>
-      {% endif %} {% endif %} {% endfor %}
+      {% for day,has_event in week %} 
+        {% if day <= 0 or day > calendar_days %}
+          <td>&nbsp;</td>
+        {% else %} 
+        {% if day == calendar_selected %}
+          <td class="selected">{{ day }}</td>
+        {% else %}
+        {% if has_event %}
+          <td>
+            <a  class="has-event" href="?date={{calendar_year}}-{{calendar_month}}-{{day}}">
+              {{ day }}
+            </a>
+          </td>
+        {% else %}
+          <td>
+            <a href="?date={{calendar_year}}-{{calendar_month}}-{{day}}">
+              {{ day }}
+            </a>
+          </td>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+      {% endfor %}
     </tr>
     {% endfor %}
   </table>
@@ -45,7 +89,12 @@ shows the usual look of a calendar of made of rows and columns-->
       </a>
 
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <a class="dropdown-item" id="remove-event" href="{{event.eventID}}/deleteEvent">Remove</a>
+        <a
+          class="dropdown-item"
+          id="remove-event"
+          href="{{event.eventID}}/deleteEvent"
+          >Remove</a
+        >
       </div>
     </div>
     {% endfor %}
