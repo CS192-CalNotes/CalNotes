@@ -25,3 +25,13 @@ class Event(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+class Note(models.Model):
+    """Note object fields"""
+
+    noteID = models.AutoField(primary_key=True)
+    note = models.TextField(blank=True)
+    date = models.DateTimeField(default=timezone.now, null=True,blank=True)
+
+    def __str__(self):
+        return str(self.note)
