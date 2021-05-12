@@ -17,7 +17,7 @@
         <table class="table table-hover">
             {% for note in note_list %}
                 <tr id="for-test">
-                    <td><a href=/notes/{{ note.noteID }}>{{ note.note }}</a></td>
+                    <td><a href=/notes/{{ note.noteID }}>{{ note.noteTitle }}</a></td>
                     <td>{{ note.date }} </td>
                     <td>
                         <a href="{{note.noteID}}/deleteNote">

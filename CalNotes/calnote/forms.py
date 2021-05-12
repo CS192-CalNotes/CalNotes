@@ -41,8 +41,15 @@ class AddEventForm(forms.ModelForm):
 class AddNoteForm(forms.ModelForm):
     class Meta:
         model = Note
-        fields = ['note', 'date']
+        fields = ['noteTitle','note', 'date']
         widgets = {
+            'noteTitle': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter task here',
+                    'aria-label': 'Task',
+                    'aria-describedby': 'add-btn'}
+            ),
             'note': forms.Textarea(
                 attrs={
                     'class': 'form-control',

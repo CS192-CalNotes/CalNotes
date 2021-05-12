@@ -265,7 +265,7 @@ def openNote(request, note_id):
         converted_note = markdowner.convert(note.note)
 
         context = {
-            'id': note.noteID,
+            'title': note.noteTitle,
             'content': converted_note
         }
         return render(request, "calnote/note.html", context)
