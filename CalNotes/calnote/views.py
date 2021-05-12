@@ -254,3 +254,18 @@ def deleteNote(request, note_id):
     note = Note.objects.get(noteID=note_id)
     note.delete()									# Remove Event from database
     return redirect(viewNotes)
+
+def openNote(request, note_id):
+    """View to display a single note"""
+
+    note = Note.objects.get(pk=note_id)             # Retrieve note
+
+    if request.method == "GET":
+
+        converted_note = markdowner.convert(note.note)
+
+        context = {
+            'id': note.noteID,
+            'content': converted_note
+        }
+        return render(request, "calnote/note.html", context)

@@ -1,0 +1,12 @@
+{% extends "calnote/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="col" id="note">
+    <!-- show note contents in markdown -->
+    <h1> {{ id }} </h1>
+    {{ content|safe }}
+</div>
+
+{% endblock %}
