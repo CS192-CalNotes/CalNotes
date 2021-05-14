@@ -17,8 +17,7 @@ class TaskForm(forms.ModelForm):
             'dueDate': forms.DateTimeInput()
         }
 
-
-class AddEventForm(forms.ModelForm):
+class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['name', 'date']
