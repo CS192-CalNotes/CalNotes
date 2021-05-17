@@ -267,3 +267,76 @@ def deleteNote(request, note_id):
     note = Note.objects.get(noteID=note_id)
     note.delete()									# Remove Event from database
     return redirect(viewNotes)
+
+def openNote(request, note_id):
+    """View to display a single note"""
+
+    # Parse date URL query
+    date_query = request.GET.get('date')
+    if date_query is None:
+        selected_date = datetime.today()
+    else:
+        selected_date = datetime.strptime(date_query, "%Y-%m-%d")
+
+    date_start = selected_date.replace(hour=0, minute=0, second=0)
+    date_end = selected_date.replace(hour=23, minute=59, second=59)
+
+    calendar_month_str = selected_date.strftime("%B")
+    calendar_year_str = selected_date.strftime("%Y")
+    calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
+    calendar_next_month_idx = (selected_date.month) % 12 + 1
+    calendar_prev_month = month_abbr[calendar_prev_month_idx]
+    calendar_next_month = month_abbr[calendar_next_month_idx]
+
+    _, calendar_days = monthrange(selected_date.year, selected_date.month)
+    offset = datetime.strptime(
+        "%d-%d-1" % (selected_date.year, selected_date.month),
+        "%Y-%m-%d"
+    ).weekday()
+
+    month_events = Event.objects.filter(
+        date__gte=date_start.replace(day=1), date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
+    has_event = {}
+    for event in month_events:
+        has_event[event.date.day-1] = True
+
+    calendar_month_range = [
+        [
+            (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
+            for day in range(7)
+        ]
+        for week in range(ceil((offset+calendar_days)/7))
+    ]
+
+    # task_list = Task.objects.order_by('taskID')
+    event_list = Event.objects.filter(
+        date__gte=date_start, date__lte=date_end).order_by('eventID')
+
+
+    note = Note.objects.get(pk=note_id)             # Retrieve note
+
+    if request.method == "GET":
+
+        converted_note = markdowner.convert(note.note)
+
+        context = {
+            'title': note.noteTitle,
+            'content': converted_note,
+
+            # Calendar contexts
+            'calendar_month_str': calendar_month_str,
+            'calendar_month': selected_date.month,
+            'calendar_year': selected_date.year,
+            'calendar_year_str': calendar_year_str,
+            'calendar_month_range': calendar_month_range,
+            'calendar_days': calendar_days,
+            'calendar_selected': selected_date.day,
+            'calendar_today': datetime.today().strftime("%Y-%m-%d"),
+            'calendar_prev_month': calendar_prev_month,
+            'calendar_next_month': calendar_next_month,
+            'event_list': event_list,
+            'calendar_prev_month_idx': calendar_prev_month_idx,
+            'calendar_next_month_idx': calendar_next_month_idx,
+            'has_event': has_event
+        }
+        return render(request, "calnote/note.html", context)
