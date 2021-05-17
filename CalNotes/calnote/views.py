@@ -1,12 +1,20 @@
-from math import ceil
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
+
+from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime
 from calendar import monthrange, month_abbr
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
+
 from markdown2 import Markdown
+from math import ceil
 
 from .models import Task, Event, Note		# Imports class Task from models.py
 # Imports forms from forms.py
+from .forms import TaskForm, AddEventForm, AddNoteForm, NewUserForm
 from .forms import TaskForm, EventForm, AddNoteForm
 
 markdowner = Markdown()
@@ -263,11 +271,10 @@ def addNewNote(request):
 
 def deleteNote(request, note_id):
     """View to remove an existing event"""
-
     note = Note.objects.get(noteID=note_id)
     note.delete()									# Remove Event from database
     return redirect(viewNotes)
-
+  
 def openNote(request, note_id):
     """View to display a single note"""
 
@@ -340,3 +347,44 @@ def openNote(request, note_id):
             'has_event': has_event
         }
         return render(request, "calnote/note.html", context)
+
+
+
+def register_request(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("index") #change this to what page you want after register
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = NewUserForm
+    return render(request=request,
+                template_name="calnote/register.html",
+                context={"register_form":form})
+
+def login_request(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("index") #change this to what page you want after login
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request=request,
+            template_name="calnote/login.html",
+            context={"login_form":form})
+
+def logout_request(request):
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect("index") #change this to what page you want after logout
