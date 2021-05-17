@@ -16,10 +16,6 @@
   background-color: transparent;
 }
 
-.list-group-item:hover{
-  background-color: #FFC344;
-}
-
 .menu-item {
   background-color: transparent;
   border-radius: 0;
