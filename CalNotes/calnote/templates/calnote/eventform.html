@@ -3,7 +3,7 @@
 {% block body %} 
 
 <div class="col">
-  <h1>Add Event</h1>
+  <h1>{{ action }}</h1>
   <br />
   <form action="" method="POST">
     {% csrf_token %}
@@ -20,7 +20,7 @@
     </div>
     <br />
     <div class="ml-3">
-      <input class="btn btn-primary" type="submit" id="eventSubmit" value="Add Event" />
+      <input class="btn btn-primary" type="submit" id="eventSubmit" value="Confirm" />
     </div>
   </form>
 </div>

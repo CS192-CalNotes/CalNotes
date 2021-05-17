@@ -20,8 +20,7 @@ class TaskForm(forms.ModelForm):
             'dueDate': forms.DateTimeInput()
         }
 
-
-class AddEventForm(forms.ModelForm):
+class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['name', 'date']
@@ -44,8 +43,15 @@ class AddEventForm(forms.ModelForm):
 class AddNoteForm(forms.ModelForm):
     class Meta:
         model = Note
-        fields = ['note', 'date']
+        fields = ['noteTitle','note', 'date']
         widgets = {
+            'noteTitle': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter task here',
+                    'aria-label': 'Note',
+                    'aria-describedby': 'add-btn'}
+            ),
             'note': forms.Textarea(
                 attrs={
                     'class': 'form-control',
@@ -62,7 +68,7 @@ class AddNoteForm(forms.ModelForm):
                     'aria-describedby': 'add-btn'}
             )
         }
-
+        
 #new user form
 class NewUserForm(UserCreationForm):
     class Meta:

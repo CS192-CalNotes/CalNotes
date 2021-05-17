@@ -1,0 +1,17 @@
+{% extends "calnote/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div class="col main-area" id="note">
+        <!-- show note contents in markdown -->
+        <h1> {{ title }} </h1>
+        <hr>
+        {{ content|safe }}
+    </div>
+
+    <div class="col-3 events" id="events">
+        {% include "calnote/calendar.html" %}
+    </div>
+
+{% endblock %}
