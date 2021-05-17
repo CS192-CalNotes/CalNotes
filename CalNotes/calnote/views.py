@@ -7,9 +7,10 @@ from markdown2 import Markdown
 
 from .models import Task, Event, Note		# Imports class Task from models.py
 # Imports forms from forms.py
-from .forms import TaskForm, EventForm, AddNoteForm
+from .forms import TaskForm, EventForm, AddNoteForm, EditNoteForm
 
 markdowner = Markdown()
+
 
 def index(request):
     """Main view: shows the task listing by default."""
@@ -80,6 +81,7 @@ def index(request):
     }
     return render(request, "calnote/index.html", context)
 
+
 def viewNotes(request):
     """Notes View"""
 
@@ -128,7 +130,7 @@ def viewNotes(request):
         'note_list': note_list,
         'empty_note_list': len(note_list) == 0,
 
-       # Calendar contexts
+        # Calendar contexts
         'calendar_month_str': calendar_month_str,
         'calendar_month': selected_date.month,
         'calendar_year': selected_date.year,
@@ -145,6 +147,7 @@ def viewNotes(request):
         'has_event': has_event
     }
     return render(request, "calnote/notesview.html", context)
+
 
 def addNewTask(request):
     """View to add a new task"""
@@ -165,12 +168,14 @@ def addNewTask(request):
         }
         return render(request, "calnote/taskform.html", context)
 
+
 def deleteTask(request, task_id):
     """View to remove an existing task"""
 
     task = Task.objects.get(taskID=task_id)
     task.delete()									# Remove Task from database
     return redirect(index)
+
 
 def toggleTask(request, task_id):
     """View to mark or unmark task as complete"""
@@ -182,6 +187,7 @@ def toggleTask(request, task_id):
         task.isComplete = False
     task.save()
     return redirect(index)
+
 
 def editTask(request, task_id):
     """View to edit a task"""
@@ -199,6 +205,7 @@ def editTask(request, task_id):
             'action': 'Edit Existing Task'
         }
         return render(request, "calnote/taskform.html", context)
+
 
 def addNewEvent(request):
     """View to add a new event"""
@@ -219,12 +226,14 @@ def addNewEvent(request):
         }
         return render(request, "calnote/eventform.html", context)
 
+
 def deleteEvent(request, event_id):
     """View to remove an existing event"""
 
     event = Event.objects.get(eventID=event_id)
     event.delete()									# Remove Event from database
     return redirect(index)
+
 
 def editEvent(request, event_id):
     """View to edit an event"""
@@ -242,6 +251,7 @@ def editEvent(request, event_id):
             'action': 'Edit Event'
         }
         return render(request, "calnote/eventform.html", context)
+
 
 def addNewNote(request):
     """View to add a new note"""
@@ -261,12 +271,14 @@ def addNewNote(request):
         }
         return render(request, "calnote/noteform.html", context)
 
+
 def deleteNote(request, note_id):
     """View to remove an existing event"""
 
     note = Note.objects.get(noteID=note_id)
     note.delete()									# Remove Event from database
     return redirect(viewNotes)
+
 
 def openNote(request, note_id):
     """View to display a single note"""
@@ -312,7 +324,6 @@ def openNote(request, note_id):
     event_list = Event.objects.filter(
         date__gte=date_start, date__lte=date_end).order_by('eventID')
 
-
     note = Note.objects.get(pk=note_id)             # Retrieve note
 
     if request.method == "GET":
@@ -340,3 +351,21 @@ def openNote(request, note_id):
             'has_event': has_event
         }
         return render(request, "calnote/note.html", context)
+
+
+def editNote(request, note_id):
+    """View to edit a note"""
+
+    note = Note.objects.get(noteID=note_id)
+    if request.method == "POST":
+        editNoteForm = EditNoteForm(request.POST or None, instance=note)
+        if editNoteForm.is_valid():
+            editNoteForm.save()
+        return redirect(viewNotes)
+
+    elif request.method == "GET":
+        context = {
+            'noteform': EditNoteForm(instance=note),
+            'action': 'Edit Note'
+        }
+        return render(request, "calnote/note-editor.html", context)
