@@ -58,7 +58,7 @@ class AddNoteForm(forms.ModelForm):
             'date': forms.DateTimeInput(
                 attrs={
                     'class': 'form-control',
-                    'aria-label': 'Event',
+                    'aria-label': 'Note',
                     'aria-describedby': 'add-btn'}
             )
         }
