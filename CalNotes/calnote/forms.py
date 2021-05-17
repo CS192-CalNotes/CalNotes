@@ -40,7 +40,7 @@ class EventForm(forms.ModelForm):
             )
         }
 
-class AddNoteForm(forms.ModelForm):
+class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
         fields = ['noteTitle','note', 'date']

@@ -13,9 +13,8 @@ from markdown2 import Markdown
 from math import ceil
 
 from .models import Task, Event, Note		# Imports class Task from models.py
-# Imports forms from forms.py
-from .forms import TaskForm, AddEventForm, AddNoteForm, NewUserForm
-from .forms import TaskForm, EventForm, AddNoteForm
+# Imports forms from forms.p
+from .forms import TaskForm, EventForm, NoteForm
 
 markdowner = Markdown()
 

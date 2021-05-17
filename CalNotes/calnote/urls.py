@@ -16,4 +16,5 @@ urlpatterns = [
     path("notes/<str:note_id>", views.openNote, name="opennote"),
     path("register", views.register_request, name="register"),
     path("login", views.login_request, name="login"),
-    path("logout", views.logout_request, name= "logout")
+    path("logout", views.logout_request, name= "logout"),
+]
