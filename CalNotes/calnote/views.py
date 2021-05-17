@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -7,86 +8,93 @@ from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime
 from calendar import monthrange, month_abbr
 from django.shortcuts import render, redirect
-from django.views.decorators.http import require_POST
 
 from markdown2 import Markdown
 from math import ceil
 
 from .models import Task, Event, Note		# Imports class Task from models.py
 # Imports forms from forms.p
-from .forms import TaskForm, EventForm, NoteForm
+from .forms import TaskForm, EventForm, NoteForm, NewUserForm
 
 markdowner = Markdown()
+
+def splashpage(request):
+    context = {}
+    return render(request, "calnote/splashpage.html", context)
 
 def index(request):
     """Main view: shows the task listing by default."""
 
-    # Parse date URL query
-    date_query = request.GET.get('date')
-    if date_query is None:
-        selected_date = datetime.today()
-    else:
-        selected_date = datetime.strptime(date_query, "%Y-%m-%d")
+    if request.user.is_authenticated:
+        # Parse date URL query
+        date_query = request.GET.get('date')
+        if date_query is None:
+            selected_date = datetime.today()
+        else:
+            selected_date = datetime.strptime(date_query, "%Y-%m-%d")
 
-    date_start = selected_date.replace(hour=0, minute=0, second=0)
-    date_end = selected_date.replace(hour=23, minute=59, second=59)
+        date_start = selected_date.replace(hour=0, minute=0, second=0)
+        date_end = selected_date.replace(hour=23, minute=59, second=59)
 
-    calendar_month_str = selected_date.strftime("%B")
-    calendar_year_str = selected_date.strftime("%Y")
-    calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
-    calendar_next_month_idx = (selected_date.month) % 12 + 1
-    calendar_prev_month = month_abbr[calendar_prev_month_idx]
-    calendar_next_month = month_abbr[calendar_next_month_idx]
+        calendar_month_str = selected_date.strftime("%B")
+        calendar_year_str = selected_date.strftime("%Y")
+        calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
+        calendar_next_month_idx = (selected_date.month) % 12 + 1
+        calendar_prev_month = month_abbr[calendar_prev_month_idx]
+        calendar_next_month = month_abbr[calendar_next_month_idx]
 
-    _, calendar_days = monthrange(selected_date.year, selected_date.month)
-    offset = datetime.strptime(
-        "%d-%d-1" % (selected_date.year, selected_date.month),
-        "%Y-%m-%d"
-    ).weekday()
+        _, calendar_days = monthrange(selected_date.year, selected_date.month)
+        offset = datetime.strptime(
+            "%d-%d-1" % (selected_date.year, selected_date.month),
+            "%Y-%m-%d"
+        ).weekday()
 
-    month_events = Event.objects.filter(
-        date__gte=date_start.replace(day=1),
-        date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
-    has_event = {}
-    for event in month_events:
-        has_event[event.date.day-1] = True
+        month_events = Event.objects.filter(
+            date__gte=date_start.replace(day=1),
+            date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
+        has_event = {}
+        for event in month_events:
+            has_event[event.date.day-1] = True
 
-    calendar_month_range = [
-        [
-            (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
-            for day in range(7)
+        calendar_month_range = [
+            [
+                (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
+                for day in range(7)
+            ]
+            for week in range(ceil((offset+calendar_days)/7))
         ]
-        for week in range(ceil((offset+calendar_days)/7))
-    ]
 
-    task_list = Task.objects.order_by('taskID').filter(user=request.user)
-    event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
+        task_list = Task.objects.order_by('taskID').filter(user=request.user)
+        event_list = Event.objects.filter(
+            date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
 
-    context = {
-        'task_list': task_list,
-        'empty_task_list': len(task_list) == 0,
-        'len_incomplete_task_list': len([task for task in task_list if not task.isComplete]),
-        'len_complete_task_list': len([task for task in task_list if task.isComplete]),
+        context = {
+            'task_list': task_list,
+            'empty_task_list': len(task_list) == 0,
+            'len_incomplete_task_list': len([task for task in task_list if not task.isComplete]),
+            'len_complete_task_list': len([task for task in task_list if task.isComplete]),
 
-        # Calendar contexts
-        'calendar_month_str': calendar_month_str,
-        'calendar_month': selected_date.month,
-        'calendar_year': selected_date.year,
-        'calendar_year_str': calendar_year_str,
-        'calendar_month_range': calendar_month_range,
-        'calendar_days': calendar_days,
-        'calendar_selected': selected_date.day,
-        'calendar_today': datetime.today().strftime("%Y-%m-%d"),
-        'calendar_prev_month': calendar_prev_month,
-        'calendar_next_month': calendar_next_month,
-        'event_list': event_list,
-        'calendar_prev_month_idx': calendar_prev_month_idx,
-        'calendar_next_month_idx': calendar_next_month_idx,
-        'has_event': has_event
-    }
-    return render(request, "calnote/index.html", context)
+            # Calendar contexts
+            'calendar_month_str': calendar_month_str,
+            'calendar_month': selected_date.month,
+            'calendar_year': selected_date.year,
+            'calendar_year_str': calendar_year_str,
+            'calendar_month_range': calendar_month_range,
+            'calendar_days': calendar_days,
+            'calendar_selected': selected_date.day,
+            'calendar_today': datetime.today().strftime("%Y-%m-%d"),
+            'calendar_prev_month': calendar_prev_month,
+            'calendar_next_month': calendar_next_month,
+            'event_list': event_list,
+            'calendar_prev_month_idx': calendar_prev_month_idx,
+            'calendar_next_month_idx': calendar_next_month_idx,
+            'has_event': has_event
+        }
+        return render(request, "calnote/index.html", context)
+    else:
+        return redirect(splashpage)
 
+@login_required
 def viewNotes(request):
     """Notes View"""
 
@@ -179,6 +187,7 @@ def deleteTask(request, task_id):
     task.delete()									# Remove Task from database
     return redirect(index)
 
+@login_required
 def toggleTask(request, task_id):
     """View to mark or unmark task as complete"""
 
@@ -386,4 +395,4 @@ def login_request(request):
 def logout_request(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect("index") #change this to what page you want after logout
+    return redirect(splashpage) #change this to what page you want after logout
