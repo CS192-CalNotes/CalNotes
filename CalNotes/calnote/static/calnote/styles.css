@@ -35,6 +35,15 @@
     color: #2D2942;
 }
 
+#for-test{
+  color: #2D2942;
+}
+
+#for-test a{
+  text-decoration: none;
+  color: #2D2942;
+}
+
 .sidenav {
     height: 100%;
     width: 0;
