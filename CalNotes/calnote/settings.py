@@ -4,6 +4,8 @@ by the DJANGO_SETTINGS_MODULE environment variable.
 """
 
 import environ
+import os
+
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -288,7 +290,7 @@ MEDIA_URL = ''
 
 # Absolute path to the directory static files should be collected to.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = None
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),'static')
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://example.com/static/", "http://static.example.com/"
