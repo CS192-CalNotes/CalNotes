@@ -47,7 +47,7 @@ class AddNoteForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'placeholder': 'Enter task here',
-                    'aria-label': 'Task',
+                    'aria-label': 'Note',
                     'aria-describedby': 'add-btn'}
             ),
             'note': forms.Textarea(
