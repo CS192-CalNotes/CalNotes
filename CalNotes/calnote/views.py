@@ -168,7 +168,9 @@ def addNewTask(request):
     if request.method == "POST":
         addTaskForm = TaskForm(request.POST)
         if addTaskForm.is_valid():
-            addTaskForm.save()		# New addtask object
+            newtask = addTaskForm.save(commit=False)
+            newtask.user = request.user
+            newtask.save()		# New addtask object
         return redirect(index)
 
     # Display task input form
@@ -223,7 +225,9 @@ def addNewEvent(request):
     if request.method == "POST":
         addEventForm = EventForm(request.POST)
         if addEventForm.is_valid():
-            addEventForm.save()		            # New addEvent object
+            newEvent = addEventForm.save(commit=False)		            # New addEvent object
+            newEvent.user = request.user
+            newEvent.save()
         return redirect(index)
 
         # Display task input form
@@ -264,14 +268,16 @@ def addNewNote(request):
 
     # Save note inputs; adds a note to the database
     if request.method == "POST":
-        addNoteForm = AddNoteForm(request.POST)
+        addNoteForm = NoteForm(request.POST)
         if addNoteForm.is_valid():
-            new_addNote = addNoteForm.save()		# New addnote object
+            newAddNote = addNoteForm.save(commit=False)		# New addnote object
+            newAddNote.user = request.user
+            newAddNote.save()
         return redirect(viewNotes)
 
         # Display note input form
     elif request.method == "GET":
-        addNoteForm = AddNoteForm(instance=Note())
+        addNoteForm = NoteForm(instance=Note())
         context = {
             'noteform': addNoteForm
         }
