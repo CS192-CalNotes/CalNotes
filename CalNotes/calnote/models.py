@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Task(models.Model):
@@ -7,6 +8,8 @@ class Task(models.Model):
 
     taskID = models.AutoField(primary_key=True)
     task = models.CharField(max_length=100)
+
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     # dueDate for the task. Should default to time of task creation
     dueDate = models.DateTimeField(default=timezone.now, null=True, blank=True)
@@ -23,6 +26,8 @@ class Event(models.Model):
     name = models.CharField(max_length=100)
     date = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+
     def __str__(self):
         return str(self.name)
 
@@ -33,6 +38,8 @@ class Note(models.Model):
     noteTitle = models.CharField(max_length=100, null=True,blank=True)
     note = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now, null=True,blank=True)
+
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.note)

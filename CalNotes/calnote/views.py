@@ -59,9 +59,9 @@ def index(request):
         for week in range(ceil((offset+calendar_days)/7))
     ]
 
-    task_list = Task.objects.order_by('taskID')
+    task_list = Task.objects.order_by('taskID').filter(user=request.user)
     event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
 
     context = {
         'task_list': task_list,
@@ -128,9 +128,9 @@ def viewNotes(request):
         for week in range(ceil((offset+calendar_days)/7))
     ]
 
-    note_list = Note.objects.order_by('noteID')
+    note_list = Note.objects.order_by('noteID').filter(user=request.user)
     event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
     context = {
         'note_list': note_list,
         'empty_note_list': len(note_list) == 0,
@@ -316,7 +316,7 @@ def openNote(request, note_id):
 
     # task_list = Task.objects.order_by('taskID')
     event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
 
 
     note = Note.objects.get(pk=note_id)             # Retrieve note
