@@ -15,4 +15,7 @@ urlpatterns = [
     path("notes", views.viewNotes, name="viewnotes"),
     path("notes/<str:note_id>", views.openNote, name="opennote"),
     path("<str:note_id>/editNote", views.editNote, name="editNote"),
+    path("register", views.register_request, name="register"),
+    path("login", views.login_request, name="login"),
+    path("logout", views.logout_request, name= "logout")
 ]

@@ -1,4 +1,7 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 from .models import Task, Event, Note
 
 # Attributes of forms needed
@@ -65,11 +68,10 @@ class AddNoteForm(forms.ModelForm):
             'date': forms.DateTimeInput(
                 attrs={
                     'class': 'form-control',
-                    'aria-label': 'Event',
+                    'aria-label': 'Note',
                     'aria-describedby': 'add-btn'}
             )
         }
-
 
 class EditNoteForm(forms.ModelForm):
     class Meta:
@@ -99,3 +101,16 @@ class EditNoteForm(forms.ModelForm):
                     'aria-describedby': 'add-btn'}
             )
         }
+        
+#new user form
+class NewUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ("username", "password1", "password2")
+        #password2 is password confirmation
+
+    def save(self, commit=True):
+        user = super(NewUserForm, self).save(commit=False)
+        if commit:
+            user.save()
+        return user
