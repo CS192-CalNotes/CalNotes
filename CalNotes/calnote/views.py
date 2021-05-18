@@ -14,7 +14,7 @@ from math import ceil
 
 from .models import Task, Event, Note		# Imports class Task from models.py
 # Imports forms from forms.p
-from .forms import TaskForm, EventForm, NoteForm, NewUserForm
+from .forms import TaskForm, EventForm, NoteForm, NewUserForm, EditNoteForm
 
 markdowner = Markdown()
 
