@@ -1,14 +1,13 @@
 import time
 import os
-from faker import Faker
 from datetime import datetime
-from calnote.models import Task, Event
-from random import randint
-from selenium import webdriver
+from faker import Faker
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
 from selenium.webdriver.remote.remote_connection import LOGGER, logging
 from selenium.webdriver.chrome.options import Options
+from calnote.models import Task, Event, Note
 
 fake = Faker()
 
@@ -31,142 +30,14 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
             ChromeDriverManager().install(), chrome_options=options)
         self.driver.implicitly_wait(5)
 
-    def test_create_task(self):
-        """Integration test for task creation."""
-
-        url = "%s%s" % (self.live_server_url, "/newtask")
-        self.driver.get(url)
-        time.sleep(2)
-
-        # Form data
-        fakeName = fake.text()[0:10]
-        dueDate = datetime.now()
-
-        # Set Task names
-        taskNameField = self.driver.find_element_by_id("id_task")
-        dueDateField = self.driver.find_element_by_id("id_dueDate")
-
-        # Clear inputs
-        taskNameField.clear()
-        dueDateField.clear()
-
-        # Fill in task name
-        taskNameField.send_keys(fakeName)
-        dueDateField.send_keys(dueDate.strftime("%Y-%m-%d %H:%M:%S"))
-
-        # Submit Form
-        time.sleep(10)
-        self.driver.find_element_by_css_selector(
-            'input[type="submit"]').click()
-
-        # Verify that the task was saved
-        self.assertEqual(self.live_server_url + "/", self.driver.current_url)
-
-        # Get rendered values
-        taskName = self.driver.find_element_by_css_selector(
-            "td:nth-of-type(2)").get_attribute("innerText").strip()
-        self.assertEqual(taskName, fakeName.strip())
-
-        actualDate = self.driver.find_element_by_css_selector(
-            "td:nth-of-type(3)").get_attribute("innerText").strip()
-        expectedDate = dueDate.strftime(
-            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][dueDate.strftime("%p") == "AM"]
-        self.assertEqual(actualDate, expectedDate)
-
-        # Clean Test database
-        Task.objects.all().delete()
-
-    def test_mark_task(self):
-        """Integration test for mark task."""
-
-        fakeName = fake.text()[0:100]
-        date = datetime.now()
-        isComplete = False
-        self.create_task(fakeName, date, isComplete)
-        time.sleep(2)
-
-        self.driver.get(self.live_server_url)
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-
-        time.sleep(2)
-
-        # Get rendered values
-        linkButton = self.driver.find_element_by_css_selector(
-            "td:first-of-type > a")
-        linkButton.click()
-        time.sleep(2)
-
-        # Verify that the task was marked complete
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-        message = self.driver.find_element_by_id(
-            "marked-test").get_attribute("innerText").strip()
-        self.assertEqual(message, "You have no incomplete tasks.")
-
-    def test_unmark_task(self):
-        """Integration test for mark task."""
-
-        fakeName = fake.text()[0:100]
-        date = datetime.now()
-        isComplete = True
-        self.create_task(fakeName, date, isComplete)
-        time.sleep(2)
-
-        self.driver.get(self.live_server_url)
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-
-        time.sleep(2)
-
-        # Get rendered values
-        linkButton = self.driver.find_element_by_id("test-click")
-        linkButton.click()
-        time.sleep(2)
-
-        # Verify that the task was marked complete
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-        message = self.driver.find_element_by_id(
-            "marked-test").get_attribute("innerText").strip()
-        self.assertEqual(message, "You have 1 incomplete task/s.")
-
-    def test_remove_task(self):
-        """Integration test for task deletion."""
-
-        fakeName = fake.text()[0:100]
-        date = datetime.now()
-        isComplete = False
-        self.create_task(fakeName, date, isComplete)
-        time.sleep(2)
-
-        self.driver.get(self.live_server_url)
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-        time.sleep(2)
-
-        # Get rendered values
-        linkButton = self.driver.find_element_by_css_selector(
-            "td:nth-of-type(4) > a")
-        linkButton.click()
-        time.sleep(2)
-
-        # Verify that the task was removed
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-        message = self.driver.find_element_by_id(
-            "test-removed").get_attribute("innerText").strip()
-        self.assertEqual(message, "No active tasks.")
-
     def test_edit_task(self):
         """Integration test for edit task."""
 
-        # Task to edit
+        # Create task
         fakeName = fake.text()[0:100]
         date = datetime.now()
         isComplete = False
         self.create_task(fakeName, date, isComplete)
-        time.sleep(2)
 
         self.driver.get(self.live_server_url)
         self.assertEqual(self.live_server_url + "/",
@@ -174,7 +45,8 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         time.sleep(2)
 
         # Go to edit form
-        linkButton = self.driver.find_element_by_class_name("bi bi-pencil-square")
+        linkButton = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(4) > a")
         linkButton.click()
         time.sleep(2)
 
@@ -189,6 +61,8 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         # Clear inputs
         taskNameField.clear()
         dueDateField.clear()
+
+        time.sleep(2)
 
         # Fill in task name
         taskNameField.send_keys(newFakeName)
@@ -210,7 +84,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         actualDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(3)").get_attribute("innerText").strip()
         expectedDate = newDueDate.strftime(
-            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][dueDate.strftime("%p") == "AM"]
+            "%B %-d, %Y, %I:%M ") + ["p.m.", "a.m."][newDueDate.strftime("%p") == "AM"]
         self.assertEqual(actualDate, expectedDate)
 
         # Clean Test database
@@ -244,55 +118,10 @@ class CreateEventViewTest(StaticLiveServerTestCase):
             ChromeDriverManager().install(), chrome_options=options)
         self.driver.implicitly_wait(5)
 
-    def test_create_event(self):
-        """Integration test for event creation."""
+    def test_edit_event(self):
+        """Integration test for editing of events."""
 
-        url = "%s%s" % (self.live_server_url, "/newevent")
-        self.driver.get(url)
-        time.sleep(2)
-
-        # Form data
-        fakeName = fake.text()[0:10]
-        date = datetime.now()
-
-        # Set Event names
-        eventNameField = self.driver.find_element_by_id("id_name")
-        dateField = self.driver.find_element_by_id("id_date")
-
-        # Clear inputs
-        eventNameField.clear()
-        dateField.clear()
-
-        # Fill in event name
-        eventNameField.send_keys(fakeName)
-        dateField.send_keys(date.strftime("%Y-%m-%d %H:%M:%S"))
-
-        # Submit Form
-        time.sleep(5)
-
-        self.driver.find_element_by_id('eventSubmit').click()
-
-        # Verify that the task was saved
-        self.assertEqual(self.live_server_url + "/", self.driver.current_url)
-
-        # Get rendered values
-        eventName = self.driver.find_element_by_id(
-            "dropdownMenuLink").get_attribute("innerText").strip()
-        self.assertEqual(eventName, fakeName.strip())
-
-        # Event date not displayed
-        # actualDate = self.driver.find_element_by_css_selector(
-        #     "td:nth-of-type(3)").get_attribute("innerText").strip()
-        # expectedDate = date.strftime(
-        #     "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
-        # self.assertEqual(actualDate, expectedDate)
-
-        # Clean Test database
-        Event.objects.all().delete()
-
-    def test_remove_event(self):
-        """Integration test for event deletion."""
-
+        # Create event
         fakeName = fake.text()[0:100]
         date = datetime.now()
         self.create_event(fakeName, date)
@@ -301,7 +130,6 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         self.driver.get(self.live_server_url)
         self.assertEqual(self.live_server_url + "/",
                          self.driver.current_url, "Link redirects to other routes.")
-
         time.sleep(2)
 
         # Get rendered values
@@ -309,16 +137,41 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         linkButton.click()
         time.sleep(2)
 
-        linkButton2 = self.driver.find_element_by_id("remove-event")
+        linkButton2 = self.driver.find_element_by_id("edit-event")
         linkButton2.click()
         time.sleep(2)
 
-        # Verify that the task was removed
-        self.assertEqual(self.live_server_url + "/",
-                         self.driver.current_url, "Link redirects to other routes.")
-        message = self.driver.find_element_by_id(
-            "test-marker").get_attribute("innerText").strip()
-        self.assertEqual(message, "+")
+        # Form data
+        newFakeName = fake.text()[0:100]
+        newDueDate = datetime.now()
+
+        # Set Event fields
+        eventNameField = self.driver.find_element_by_id("id_name")
+        dueDateField = self.driver.find_element_by_id("id_date")
+
+        # Clear inputs
+        eventNameField.clear()
+        dueDateField.clear()
+
+        # Fill in task name
+        eventNameField.send_keys(newFakeName)
+        dueDateField.send_keys(newDueDate.strftime("%Y-%m-%d %H:%M:%S"))
+
+        # Submit Form
+        time.sleep(10)
+        self.driver.find_element_by_css_selector(
+            'input[type="submit"]').click()
+
+        # Verify that the event was saved
+        self.assertEqual(self.live_server_url + "/", self.driver.current_url)
+
+        # Verify that the event was edited
+        eventName = self.driver.find_element_by_id(
+            "dropdownMenuLink").get_attribute("innerText").strip()
+        self.assertEqual(eventName, fakeName.strip())
+
+        # Clean Test database
+        Event.objects.all().delete()
 
     def tearDown(self):
         """Close chrome driver"""
@@ -328,12 +181,12 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         self.driver.close()
 
 
-class CalendarViewTest(StaticLiveServerTestCase):
+class CreateNoteViewTest(StaticLiveServerTestCase):
 
-    def create_event(self, date):
+    def create_note(self, noteTitle, note, date):
         """Utility function for creating event."""
-        fakeName = fake.text()[0:10]
-        Event.objects.create(name=fakeName, date=date)
+
+        Note.objects.create(noteTitle=noteTitle, note=note, date=date)
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -348,31 +201,157 @@ class CalendarViewTest(StaticLiveServerTestCase):
             ChromeDriverManager().install(), chrome_options=options)
         self.driver.implicitly_wait(5)
 
-        # Add events
-        eventDate = datetime.now()
-        self.create_event(eventDate.replace(day=1, month=1))
-        self.create_event(eventDate.replace(day=3, month=1))
-        self.create_event(eventDate.replace(day=1, month=2))
+    def test_add_note(self):
+        """Integration test for note creation."""
 
-    def test_today(self):
-        """ Test if calendar highlights the correct day """
-        url = self.live_server_url
+        url = "%s%s" % (self.live_server_url, "/newnote")
         self.driver.get(url)
         time.sleep(2)
 
-        selected_day = self.driver.find_element_by_css_selector(
-            ".calendar td.selected").get_attribute("innerText").strip()
-        self.assertEqual(selected_day, "%d" % datetime.now().day)
+        # Form data
+        fakeName = fake.text()[0:100]
+        fakeContent = fake.text()[:256]
+        date = datetime.now()
 
-    def test_day(self):
-        """ Test if calendar highlights the correct arbitrary day """
-        url = "%s%s" % (self.live_server_url, "?date=2021-05-02")
-        self.driver.get(url)
+        # Set note fields
+        noteTitleField = self.driver.find_element_by_id("id_noteTitle")
+        noteField = self.driver.find_element_by_id("id_note")
+        dateField = self.driver.find_element_by_id("id_date")
+
+        noteTitleField.clear()
+        noteField.clear()
+        dateField.clear()
+
+        noteTitleField.send_keys(fakeName)
+        noteField.send_keys(fakeContent)
+        dateField.send_keys(date.strftime("%Y-%m-%d %H:%M:%S"))
+
+        # Submit form
+        time.sleep(10)
+        self.driver.find_element_by_css_selector(
+            'input[type="submit"]').click()
+
+        time.sleep(5)
+
+        # Verify that the note was saved
+        self.assertEqual(self.live_server_url + "/notes", self.driver.current_url)
+
+        # Get rendered values
+        noteName = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(1)").get_attribute("innerText").strip()
+        self.assertEqual(noteName, fakeName.strip())
+
+        noteDate = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(2)").get_attribute("innerText").strip()
+        expectedDate = date.strftime(
+            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
+        self.assertEqual(noteDate, expectedDate)
+
+        linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
+        linkButton.click()
         time.sleep(2)
 
-        selected_day = self.driver.find_element_by_css_selector(
-            "div.calendar td.selected").get_attribute("innerText").strip()
-        self.assertEqual(selected_day, "2")
+        content = self.driver.find_element_by_tag_name('p').get_attribute(
+            "innerText").strip()
+        self.assertEqual(content, fakeContent.strip())
+
+        # Clean Test database
+        Note.objects.all().delete()
+
+    def test_edit_note(self):
+        """Integration test for editing of notes."""
+
+        # Create note
+        fakeName = fake.text()[0:100]
+        fakeContent = fake.text()[:256]
+        date = datetime.now()
+        self.create_note(fakeName, fakeContent, date)
+        time.sleep(2)
+
+        url = "%s%s" % (self.live_server_url, "/notes")
+        self.driver.get(url)
+        time.sleep(5)
+
+        linkButton = self.driver.find_element_by_id("edit-test")
+        linkButton.click()
+        time.sleep(5)
+
+        # Form data
+        newFakeName = fake.text()[0:100]
+        newFakeContent = fake.text()[:256]
+        newDate = datetime.now()
+
+        # Set note fields
+        noteTitleField = self.driver.find_element_by_id("id_noteTitle")
+        noteField = self.driver.find_element_by_tag_name("textarea")
+        dateField = self.driver.find_element_by_id("id_date")
+        time.sleep(2)
+
+        noteTitleField.clear()
+        noteField.clear()
+        dateField.clear()
+        time.sleep(2)
+
+        noteTitleField.send_keys(fakeName)
+        noteField.send_keys(fakeContent)
+        dateField.send_keys(date.strftime("%Y-%m-%d %H:%M:%S"))
+
+        # Submit form
+        time.sleep(5)
+        self.driver.find_element_by_css_selector(
+            'input[type="submit"]').click()
+
+        time.sleep(5)
+
+        # Verify that the note was saved
+        self.assertEqual(self.live_server_url + "/notes", self.driver.current_url)
+
+        # Get rendered values
+        noteName = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(1)").get_attribute("innerText").strip()
+        self.assertEqual(noteName, newFakeName.strip())
+
+        noteDate = self.driver.find_element_by_css_selector(
+            "td:nth-of-type(2)").get_attribute("innerText").strip()
+        expectedDate = newDate.strftime(
+            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][newDate.strftime("%p") == "AM"]
+        self.assertEqual(noteDate, expectedDate)
+
+        linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
+        linkButton.click()
+        time.sleep(2)
+
+        content = self.driver.find_element_by_tag_name('p').get_attribute(
+            "innerText").strip()
+        self.assertEqual(content, newFakeContent.strip())
+
+        # Clean Test database
+        Note.objects.all().delete()
+
+    def test_remove_note(self):
+        """Integration test for note deletion."""
+
+        # Create note
+        fakeName = fake.text()[0:100]
+        fakeContent = fake.text()[:256]
+        date = datetime.now()
+        self.create_note(fakeName, fakeContent, date)
+        time.sleep(2)
+
+        url = "%s%s" % (self.live_server_url, "/notes")
+        self.driver.get(url)
+        time.sleep(5)
+
+        linkButton = self.driver.find_element_by_id("delete-test")
+        linkButton.click()
+        time.sleep(5)
+
+        # Verify that the note was deleted
+        self.assertEqual(self.live_server_url + "/notes", self.driver.current_url)
+
+        message = self.driver.find_element_by_id(
+            "test-removed").get_attribute("innerText").strip()
+        self.assertEqual(message, "No Notes.")
 
     def tearDown(self):
         """Close chrome driver"""
