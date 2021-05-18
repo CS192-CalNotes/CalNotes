@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -7,89 +8,95 @@ from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime
 from calendar import monthrange, month_abbr
 from django.shortcuts import render, redirect
-from django.views.decorators.http import require_POST
 
 from markdown2 import Markdown
 from math import ceil
 
 from .models import Task, Event, Note		# Imports class Task from models.py
-# Imports forms from forms.py
-from .forms import TaskForm, AddEventForm, AddNoteForm, NewUserForm, EditNoteForm
-from .forms import TaskForm, EventForm, AddNoteForm
+# Imports forms from forms.p
+from .forms import TaskForm, EventForm, NoteForm, NewUserForm, EditNoteForm
 
 markdowner = Markdown()
 
+def splashpage(request):
+    context = {}
+    return render(request, "calnote/splashpage.html", context)
 
 def index(request):
     """Main view: shows the task listing by default."""
 
-    # Parse date URL query
-    date_query = request.GET.get('date')
-    if date_query is None:
-        selected_date = datetime.today()
-    else:
-        selected_date = datetime.strptime(date_query, "%Y-%m-%d")
+    if request.user.is_authenticated:
+        # Parse date URL query
+        date_query = request.GET.get('date')
+        if date_query is None:
+            selected_date = datetime.today()
+        else:
+            selected_date = datetime.strptime(date_query, "%Y-%m-%d")
 
-    date_start = selected_date.replace(hour=0, minute=0, second=0)
-    date_end = selected_date.replace(hour=23, minute=59, second=59)
+        date_start = selected_date.replace(hour=0, minute=0, second=0)
+        date_end = selected_date.replace(hour=23, minute=59, second=59)
 
-    calendar_month_str = selected_date.strftime("%B")
-    calendar_year_str = selected_date.strftime("%Y")
-    calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
-    calendar_next_month_idx = (selected_date.month) % 12 + 1
-    calendar_prev_month = month_abbr[calendar_prev_month_idx]
-    calendar_next_month = month_abbr[calendar_next_month_idx]
+        calendar_month_str = selected_date.strftime("%B")
+        calendar_year_str = selected_date.strftime("%Y")
+        calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
+        calendar_next_month_idx = (selected_date.month) % 12 + 1
+        calendar_prev_month = month_abbr[calendar_prev_month_idx]
+        calendar_next_month = month_abbr[calendar_next_month_idx]
 
-    _, calendar_days = monthrange(selected_date.year, selected_date.month)
-    offset = datetime.strptime(
-        "%d-%d-1" % (selected_date.year, selected_date.month),
-        "%Y-%m-%d"
-    ).weekday()
+        _, calendar_days = monthrange(selected_date.year, selected_date.month)
+        offset = datetime.strptime(
+            "%d-%d-1" % (selected_date.year, selected_date.month),
+            "%Y-%m-%d"
+        ).weekday()
 
-    month_events = Event.objects.filter(
-        date__gte=date_start.replace(day=1),
-        date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
-    has_event = {}
-    for event in month_events:
-        has_event[event.date.day-1] = True
+        month_events = Event.objects.filter(
+            date__gte=date_start.replace(day=1),
+            date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
+        has_event = {}
+        for event in month_events:
+            if event.user == request.user:
+                has_event[event.date.day-1] = True
 
-    calendar_month_range = [
-        [
-            (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
-            for day in range(7)
+        calendar_month_range = [
+            [
+                (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
+                for day in range(7)
+            ]
+            for week in range(ceil((offset+calendar_days)/7))
         ]
-        for week in range(ceil((offset+calendar_days)/7))
-    ]
 
-    task_list = Task.objects.order_by('taskID')
-    event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        task_list = Task.objects.order_by('taskID').filter(user=request.user)
+        event_list = Event.objects.filter(
+            date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
 
-    context = {
-        'task_list': task_list,
-        'empty_task_list': len(task_list) == 0,
-        'len_incomplete_task_list': len([task for task in task_list if not task.isComplete]),
-        'len_complete_task_list': len([task for task in task_list if task.isComplete]),
+        context = {
+            'task_list': task_list,
+            'empty_task_list': len(task_list) == 0,
+            'len_incomplete_task_list': len([task for task in task_list if not task.isComplete]),
+            'len_complete_task_list': len([task for task in task_list if task.isComplete]),
 
-        # Calendar contexts
-        'calendar_month_str': calendar_month_str,
-        'calendar_month': selected_date.month,
-        'calendar_year': selected_date.year,
-        'calendar_year_str': calendar_year_str,
-        'calendar_month_range': calendar_month_range,
-        'calendar_days': calendar_days,
-        'calendar_selected': selected_date.day,
-        'calendar_today': datetime.today().strftime("%Y-%m-%d"),
-        'calendar_prev_month': calendar_prev_month,
-        'calendar_next_month': calendar_next_month,
-        'event_list': event_list,
-        'calendar_prev_month_idx': calendar_prev_month_idx,
-        'calendar_next_month_idx': calendar_next_month_idx,
-        'has_event': has_event
-    }
-    return render(request, "calnote/index.html", context)
+            # Calendar contexts
+            'calendar_month_str': calendar_month_str,
+            'calendar_month': selected_date.month,
+            'calendar_year': selected_date.year,
+            'calendar_year_str': calendar_year_str,
+            'calendar_month_range': calendar_month_range,
+            'calendar_days': calendar_days,
+            'calendar_selected': selected_date.day,
+            'calendar_today': datetime.today().strftime("%Y-%m-%d"),
+            'calendar_prev_month': calendar_prev_month,
+            'calendar_next_month': calendar_next_month,
+            'event_list': event_list,
+            'calendar_prev_month_idx': calendar_prev_month_idx,
+            'calendar_next_month_idx': calendar_next_month_idx,
+            'has_event': has_event
+        }
+        return render(request, "calnote/index.html", context)
+    else:
+        return redirect(splashpage)
 
 
+@login_required
 def viewNotes(request):
     """Notes View"""
 
@@ -121,7 +128,8 @@ def viewNotes(request):
         date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
     has_event = {}
     for event in month_events:
-        has_event[event.date.day-1] = True
+        if event.user == request.user:
+            has_event[event.date.day-1] = True
 
     calendar_month_range = [
         [
@@ -131,9 +139,9 @@ def viewNotes(request):
         for week in range(ceil((offset+calendar_days)/7))
     ]
 
-    note_list = Note.objects.order_by('noteID')
+    note_list = Note.objects.order_by('noteID').filter(user=request.user)
     event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
     context = {
         'note_list': note_list,
         'empty_note_list': len(note_list) == 0,
@@ -164,7 +172,9 @@ def addNewTask(request):
     if request.method == "POST":
         addTaskForm = TaskForm(request.POST)
         if addTaskForm.is_valid():
-            addTaskForm.save()		# New addtask object
+            newtask = addTaskForm.save(commit=False)
+            newtask.user = request.user
+            newtask.save()		# New addtask object
         return redirect(index)
 
     # Display task input form
@@ -185,6 +195,7 @@ def deleteTask(request, task_id):
     return redirect(index)
 
 
+@login_required
 def toggleTask(request, task_id):
     """View to mark or unmark task as complete"""
 
@@ -222,7 +233,9 @@ def addNewEvent(request):
     if request.method == "POST":
         addEventForm = EventForm(request.POST)
         if addEventForm.is_valid():
-            addEventForm.save()		            # New addEvent object
+            newEvent = addEventForm.save(commit=False)		            # New addEvent object
+            newEvent.user = request.user
+            newEvent.save()
         return redirect(index)
 
         # Display task input form
@@ -266,14 +279,16 @@ def addNewNote(request):
 
     # Save note inputs; adds a note to the database
     if request.method == "POST":
-        addNoteForm = AddNoteForm(request.POST)
+        addNoteForm = NoteForm(request.POST)
         if addNoteForm.is_valid():
-            new_addNote = addNoteForm.save()		# New addnote object
+            newAddNote = addNoteForm.save(commit=False)		# New addnote object
+            newAddNote.user = request.user
+            newAddNote.save()
         return redirect(viewNotes)
 
         # Display note input form
     elif request.method == "GET":
-        addNoteForm = AddNoteForm(instance=Note())
+        addNoteForm = NoteForm(instance=Note())
         context = {
             'noteform': addNoteForm
         }
@@ -316,7 +331,8 @@ def openNote(request, note_id):
         date__gte=date_start.replace(day=1), date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
     has_event = {}
     for event in month_events:
-        has_event[event.date.day-1] = True
+        if event.user == request.user:
+            has_event[event.date.day-1] = True
 
     calendar_month_range = [
         [
@@ -328,7 +344,7 @@ def openNote(request, note_id):
 
     # task_list = Task.objects.order_by('taskID')
     event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end).order_by('eventID')
+        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
 
     note = Note.objects.get(pk=note_id)             # Retrieve note
 
@@ -400,7 +416,7 @@ def login_request(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect("index") #change this to what page you want after login
+                return redirect("index")
             else:
                 messages.error(request,"Invalid username or password.")
         else:
@@ -413,4 +429,4 @@ def login_request(request):
 def logout_request(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect("index") #change this to what page you want after logout
+    return redirect(splashpage)
