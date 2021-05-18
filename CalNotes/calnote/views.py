@@ -54,7 +54,8 @@ def index(request):
             date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
         has_event = {}
         for event in month_events:
-            has_event[event.date.day-1] = True
+            if event.user == request.user:
+                has_event[event.date.day-1] = True
 
         calendar_month_range = [
             [
@@ -126,7 +127,8 @@ def viewNotes(request):
         date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
     has_event = {}
     for event in month_events:
-        has_event[event.date.day-1] = True
+        if event.user == request.user:
+            has_event[event.date.day-1] = True
 
     calendar_month_range = [
         [
@@ -319,7 +321,8 @@ def openNote(request, note_id):
         date__gte=date_start.replace(day=1), date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
     has_event = {}
     for event in month_events:
-        has_event[event.date.day-1] = True
+        if event.user == request.user:
+            has_event[event.date.day-1] = True
 
     calendar_month_range = [
         [
