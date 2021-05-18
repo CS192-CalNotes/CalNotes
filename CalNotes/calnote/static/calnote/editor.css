@@ -1,0 +1,90 @@
+.note-editor {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2rem;
+}
+
+.note-editor .content {
+  width: 100%;
+}
+
+.note-editor .content .heading {
+  width: 100%;
+  display: flex;
+}
+
+.note-editor .content .save {
+  margin-left: auto;
+  margin-right: 5rem;
+  padding-top: 2rem;
+}
+.note-editor .content .meta > div {
+  width: 100%;
+}
+
+.note-editor .content .meta > div > .title-input {
+  margin-top: 10px;
+  font-size: 2rem;
+  border: none;
+  padding: 10px;
+  margin-bottom: 1px;
+}
+.note-editor .content .meta .date {
+  width: 100%;
+  color: #97618a;
+  display: flex;
+  line-height: 1rem;
+}
+.note-editor .content .meta .date > span {
+  padding: 13px;
+  line-height: 1rem;
+}
+.note-editor .content .meta > div > .date-input {
+  font-size: 1rem;
+  line-height: 1rem;
+  border: none;
+  padding: 10px;
+  color: #97618a;
+}
+
+.note-editor .content .meta > div > .title-input:focus {
+  outline: 1px solid #8fadff;
+}
+
+.note-editor .content .meta > div > .date-input:focus {
+  outline: 1px solid #8fadff;
+}
+
+.note-editor .main {
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+}
+
+.note-editor .textarea {
+  width: 45%;
+  margin-right: 5%;
+}
+
+.note-editor .viewer {
+  width: 50%;
+  padding: 1rem;
+  height: 60vh;
+  overflow-y: auto;
+}
+
+.note-editor .note-input {
+  outline: none;
+  border: none;
+  padding: 20px;
+
+  font-size: 1.1rem;
+  width: 100%;
+  height: 60vh;
+  resize: none;
+}
+
+.note-editor .note-input:focus {
+  outline: 1px solid #8fadff;
+}

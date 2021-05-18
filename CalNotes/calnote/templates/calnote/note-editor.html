@@ -1,0 +1,31 @@
+{% extends "calnote/layout.html" %} {% block body %}
+<div class="note-editor">
+  <div class="content">
+    <form action="" method="POST">
+      {% csrf_token %}
+
+      <div class="heading">
+        <div class="meta">
+          <div class="title">{{ noteform.noteTitle }}</div>
+          <div class="date">
+            <span> Date: </span>
+            {{ noteform.date }}
+          </div>
+        </div>
+        <div class="save">
+          <input
+            class="btn btn-outline-primary"
+            type="submit"
+            value="Save Note"
+          />
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="textarea">{{ noteform.note }}</div>
+        <div id="note-viewer" class="viewer">Loading...</div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
