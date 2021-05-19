@@ -22,6 +22,48 @@ def splashpage(request):
     context = {}
     return render(request, "calnote/splashpage.html", context)
 
+
+def register_request(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("index") #change this to what page you want after register
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = NewUserForm
+
+    return render(request=request,
+                template_name="calnote/register.html",
+                context={"register_form":form})
+
+def login_request(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("index")
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+    form = AuthenticationForm()
+
+    return render(request=request,
+            template_name="calnote/login.html",
+            context={"login_form":form})
+
+def logout_request(request):
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect(splashpage)
+
 def index(request):
     """Main view: shows the task listing by default."""
 
@@ -96,73 +138,75 @@ def index(request):
         return redirect(splashpage)
 
 
-@login_required
 def viewNotes(request):
     """Notes View"""
 
-    # Parse date URL query
-    date_query = request.GET.get('date')
-    if date_query is None:
-        selected_date = datetime.today()
-    else:
-        selected_date = datetime.strptime(date_query, "%Y-%m-%d")
+    if request.user.is_authenticated:
+        # Parse date URL query
+        date_query = request.GET.get('date')
+        if date_query is None:
+            selected_date = datetime.today()
+        else:
+            selected_date = datetime.strptime(date_query, "%Y-%m-%d")
 
-    date_start = selected_date.replace(hour=0, minute=0, second=0)
-    date_end = selected_date.replace(hour=23, minute=59, second=59)
+        date_start = selected_date.replace(hour=0, minute=0, second=0)
+        date_end = selected_date.replace(hour=23, minute=59, second=59)
 
-    calendar_month_str = selected_date.strftime("%B")
-    calendar_year_str = selected_date.strftime("%Y")
-    calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
-    calendar_next_month_idx = (selected_date.month) % 12 + 1
-    calendar_prev_month = month_abbr[calendar_prev_month_idx]
-    calendar_next_month = month_abbr[calendar_next_month_idx]
+        calendar_month_str = selected_date.strftime("%B")
+        calendar_year_str = selected_date.strftime("%Y")
+        calendar_prev_month_idx = (selected_date.month-2) % 12 + 1
+        calendar_next_month_idx = (selected_date.month) % 12 + 1
+        calendar_prev_month = month_abbr[calendar_prev_month_idx]
+        calendar_next_month = month_abbr[calendar_next_month_idx]
 
-    _, calendar_days = monthrange(selected_date.year, selected_date.month)
-    offset = datetime.strptime(
-        "%d-%d-1" % (selected_date.year, selected_date.month),
-        "%Y-%m-%d"
-    ).weekday()
+        _, calendar_days = monthrange(selected_date.year, selected_date.month)
+        offset = datetime.strptime(
+            "%d-%d-1" % (selected_date.year, selected_date.month),
+            "%Y-%m-%d"
+        ).weekday()
 
-    month_events = Event.objects.filter(
-        date__gte=date_start.replace(day=1),
-        date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
-    has_event = {}
-    for event in month_events:
-        if event.user == request.user:
-            has_event[event.date.day-1] = True
+        month_events = Event.objects.filter(
+            date__gte=date_start.replace(day=1),
+            date__lte=date_end.replace(day=calendar_days)).order_by('eventID')
+        has_event = {}
+        for event in month_events:
+            if event.user == request.user:
+                has_event[event.date.day-1] = True
 
-    calendar_month_range = [
-        [
-            (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
-            for day in range(7)
+        calendar_month_range = [
+            [
+                (week*7+day-offset+1, has_event.get(week*7+day-offset, False))
+                for day in range(7)
+            ]
+            for week in range(ceil((offset+calendar_days)/7))
         ]
-        for week in range(ceil((offset+calendar_days)/7))
-    ]
 
-    note_list = Note.objects.order_by('noteID').filter(user=request.user)
-    event_list = Event.objects.filter(
-        date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
-    context = {
-        'note_list': note_list,
-        'empty_note_list': len(note_list) == 0,
+        note_list = Note.objects.order_by('noteID').filter(user=request.user)
+        event_list = Event.objects.filter(
+            date__gte=date_start, date__lte=date_end, user=request.user).order_by('eventID')
+        context = {
+            'note_list': note_list,
+            'empty_note_list': len(note_list) == 0,
 
-        # Calendar contexts
-        'calendar_month_str': calendar_month_str,
-        'calendar_month': selected_date.month,
-        'calendar_year': selected_date.year,
-        'calendar_year_str': calendar_year_str,
-        'calendar_month_range': calendar_month_range,
-        'calendar_days': calendar_days,
-        'calendar_selected': selected_date.day,
-        'calendar_today': datetime.today().strftime("%Y-%m-%d"),
-        'calendar_prev_month': calendar_prev_month,
-        'calendar_next_month': calendar_next_month,
-        'event_list': event_list,
-        'calendar_prev_month_idx': calendar_prev_month_idx,
-        'calendar_next_month_idx': calendar_next_month_idx,
-        'has_event': has_event
-    }
-    return render(request, "calnote/notesview.html", context)
+            # Calendar contexts
+            'calendar_month_str': calendar_month_str,
+            'calendar_month': selected_date.month,
+            'calendar_year': selected_date.year,
+            'calendar_year_str': calendar_year_str,
+            'calendar_month_range': calendar_month_range,
+            'calendar_days': calendar_days,
+            'calendar_selected': selected_date.day,
+            'calendar_today': datetime.today().strftime("%Y-%m-%d"),
+            'calendar_prev_month': calendar_prev_month,
+            'calendar_next_month': calendar_next_month,
+            'event_list': event_list,
+            'calendar_prev_month_idx': calendar_prev_month_idx,
+            'calendar_next_month_idx': calendar_next_month_idx,
+            'has_event': has_event
+        }
+        return render(request, "calnote/notesview.html", context)
+    else:
+        return redirect(login_request)
 
 
 def addNewTask(request):
@@ -178,7 +222,7 @@ def addNewTask(request):
         return redirect(index)
 
     # Display task input form
-    elif request.method == "GET":
+    if request.method == "GET":
         addTaskForm = TaskForm(instance=Task())
         context = {
             'taskform': addTaskForm,
@@ -218,7 +262,7 @@ def editTask(request, task_id):
             editTaskForm.save()
         return redirect(index)
 
-    elif request.method == "GET":
+    if request.method == "GET":
         context = {
             'taskform': TaskForm(instance=task),
             'action': 'Edit Existing Task'
@@ -239,7 +283,7 @@ def addNewEvent(request):
         return redirect(index)
 
         # Display task input form
-    elif request.method == "GET":
+    if request.method == "GET":
         addEventForm = EventForm(instance=Event())
         context = {
             'eventform': addEventForm,
@@ -266,7 +310,7 @@ def editEvent(request, event_id):
             editEventForm.save()
         return redirect(index)
 
-    elif request.method == "GET":
+    if request.method == "GET":
         context = {
             'eventform': EventForm(instance=event),
             'action': 'Edit Event'
@@ -287,7 +331,7 @@ def addNewNote(request):
         return redirect(viewNotes)
 
         # Display note input form
-    elif request.method == "GET":
+    if request.method == "GET":
         addNoteForm = NoteForm(instance=Note())
         context = {
             'noteform': addNoteForm
@@ -298,7 +342,7 @@ def addNewNote(request):
 def deleteNote(request, note_id):
     """View to remove an existing event"""
     note = Note.objects.get(noteID=note_id)
-    note.delete()									# Remove Event from database
+    note.delete()									# Remove Note from database
     return redirect(viewNotes)
 
 def openNote(request, note_id):
@@ -385,48 +429,9 @@ def editNote(request, note_id):
             editNoteForm.save()
         return redirect(viewNotes)
 
-    elif request.method == "GET":
+    if request.method == "GET":
         context = {
             'noteform': EditNoteForm(instance=note),
             'action': 'Edit Note'
         }
         return render(request, "calnote/note-editor.html", context)
-
-def register_request(request):
-    if request.method == "POST":
-        form = NewUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful." )
-            return redirect("index") #change this to what page you want after register
-        messages.error(request, "Unsuccessful registration. Invalid information.")
-    form = NewUserForm
-    return render(request=request,
-                template_name="calnote/register.html",
-                context={"register_form":form})
-
-def login_request(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(request, f"You are now logged in as {username}.")
-                return redirect("index")
-            else:
-                messages.error(request,"Invalid username or password.")
-        else:
-            messages.error(request,"Invalid username or password.")
-    form = AuthenticationForm()
-    return render(request=request,
-            template_name="calnote/login.html",
-            context={"login_form":form})
-
-def logout_request(request):
-    logout(request)
-    messages.info(request, "You have successfully logged out.")
-    return redirect(splashpage)
