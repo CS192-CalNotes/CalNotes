@@ -48,7 +48,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         # Go to edit form
         linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(4) > a")
         linkButton.click()
-        time.sleep(2)
+        self.driver.implicitly_wait(10)
 
         # Form data
         newFakeName = fake.text()[0:100]
@@ -139,7 +139,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
         linkButton2 = self.driver.find_element_by_id("edit-event")
         linkButton2.click()
-        time.sleep(2)
+        self.driver.implicitly_wait(15)
 
         # Form data
         newFakeName = fake.text()[0:100]
@@ -153,7 +153,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         eventNameField.clear()
         dueDateField.clear()
 
-        self.driver.implicitly_wait(5)
+        self.driver.implicitly_wait(15)
 
         # Fill in event details
         eventNameField.send_keys(newFakeName)
@@ -208,7 +208,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
         url = "%s%s" % (self.live_server_url, "/newnote")
         self.driver.get(url)
-        time.sleep(2)
+        self.driver.implicitly_wait(10)
 
         # Form data
         fakeName = fake.text()[0:100]
@@ -278,7 +278,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
         linkButton = self.driver.find_element_by_id("edit-test")
         linkButton.click()
-        time.sleep(5)
+        self.driver.implicitly_wait(10)
 
         # Form data
         newFakeName = fake.text()[0:100]
@@ -294,7 +294,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteField.clear()
         dateField.clear()
         
-        self.driver.implicitly_wait(5)
+        self.driver.implicitly_wait(10)
 
         noteTitleField.send_keys(newFakeName)
         noteField.send_keys(newFakeContent)
