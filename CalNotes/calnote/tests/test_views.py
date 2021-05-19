@@ -33,11 +33,12 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
     def test_edit_task(self):
         """Integration test for edit task."""
 
-        # Create task
+        # Task to edit
         fakeName = fake.text()[0:100]
         date = datetime.now()
         isComplete = False
         self.create_task(fakeName, date, isComplete)
+        time.sleep(2)
 
         self.driver.get(self.live_server_url)
         self.assertEqual(self.live_server_url + "/",
@@ -45,8 +46,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         time.sleep(2)
 
         # Go to edit form
-        linkButton = self.driver.find_element_by_css_selector(
-            "td:nth-of-type(4) > a")
+        linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(4) > a")
         linkButton.click()
         time.sleep(2)
 
@@ -62,14 +62,14 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         taskNameField.clear()
         dueDateField.clear()
 
-        time.sleep(2)
+        self.driver.implicitly_wait(10)
 
         # Fill in task name
         taskNameField.send_keys(newFakeName)
         dueDateField.send_keys(newDueDate.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Submit Form
-        time.sleep(10)
+        time.sleep(5)
         self.driver.find_element_by_css_selector(
             'input[type="submit"]').click()
 
@@ -84,7 +84,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
         actualDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(3)").get_attribute("innerText").strip()
         expectedDate = newDueDate.strftime(
-            "%B %-d, %Y, %I:%M ") + ["p.m.", "a.m."][newDueDate.strftime("%p") == "AM"]
+            "%B %#d, %Y, %#I:%M ") + ["p.m.", "a.m."][newDueDate.strftime("%p") == "AM"]
         self.assertEqual(actualDate, expectedDate)
 
         # Clean Test database
@@ -153,7 +153,9 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         eventNameField.clear()
         dueDateField.clear()
 
-        # Fill in task name
+        self.driver.implicitly_wait(5)
+
+        # Fill in event details
         eventNameField.send_keys(newFakeName)
         dueDateField.send_keys(newDueDate.strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -168,7 +170,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
         # Verify that the event was edited
         eventName = self.driver.find_element_by_id(
             "dropdownMenuLink").get_attribute("innerText").strip()
-        self.assertEqual(eventName, fakeName.strip())
+        self.assertEqual(eventName, newFakeName.strip())
 
         # Clean Test database
         Event.objects.all().delete()
@@ -222,6 +224,8 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteField.clear()
         dateField.clear()
 
+        self.driver.implicitly_wait(10)
+
         noteTitleField.send_keys(fakeName)
         noteField.send_keys(fakeContent)
         dateField.send_keys(date.strftime("%Y-%m-%d %H:%M:%S"))
@@ -244,7 +248,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(2)").get_attribute("innerText").strip()
         expectedDate = date.strftime(
-            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
+            "%B %#d, %Y, %#I:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
         self.assertEqual(noteDate, expectedDate)
 
         linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
@@ -285,16 +289,16 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteTitleField = self.driver.find_element_by_id("id_noteTitle")
         noteField = self.driver.find_element_by_tag_name("textarea")
         dateField = self.driver.find_element_by_id("id_date")
-        time.sleep(2)
 
         noteTitleField.clear()
         noteField.clear()
         dateField.clear()
-        time.sleep(2)
+        
+        self.driver.implicitly_wait(5)
 
-        noteTitleField.send_keys(fakeName)
-        noteField.send_keys(fakeContent)
-        dateField.send_keys(date.strftime("%Y-%m-%d %H:%M:%S"))
+        noteTitleField.send_keys(newFakeName)
+        noteField.send_keys(newFakeContent)
+        dateField.send_keys(newDate.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Submit form
         time.sleep(5)
@@ -314,7 +318,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(2)").get_attribute("innerText").strip()
         expectedDate = newDate.strftime(
-            "%B %-d, %Y, %-H:%M ") + ["p.m.", "a.m."][newDate.strftime("%p") == "AM"]
+            "%B %#d, %Y, %#I:%M ") + ["p.m.", "a.m."][newDate.strftime("%p") == "AM"]
         self.assertEqual(noteDate, expectedDate)
 
         linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
