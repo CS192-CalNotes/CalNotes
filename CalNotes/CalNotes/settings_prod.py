@@ -32,7 +32,7 @@ SECRET_KEY = 's&!r_qpzgdintcblq-z#bs_ktye5xs_9v8sfr%w+jb5ov7ozw5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['calnotes.herokuapp.com']
 
 
 # Application definition
