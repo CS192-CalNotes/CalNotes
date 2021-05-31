@@ -1,0 +1,33 @@
+body{
+    background-color: #FFC344;
+    min-height: 100vh;
+}
+
+.container a,p{
+    text-decoration: none;
+    color: #818181;
+}
+
+.container a:hover{
+    text-decoration: underline;
+    color: #818181;
+}
+
+
+.title{
+    font-size: 5em;
+}
+
+.subtitle{
+    font-size: 2em;
+}
+
+.container{
+    color: #2D2942;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
