@@ -121,3 +121,11 @@
 .collapsible-button:checked ~ .collapsible-label::after {
 	transform: scale(1.5) rotate(-90deg);
 }
+
+.table-hover > tbody > tr.no-hover:hover > td {
+    background-color: #D1D4D7;
+}
+
+.tr-color{
+  background-color: #D1D4D7;
+}

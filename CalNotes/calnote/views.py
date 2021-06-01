@@ -137,6 +137,18 @@ def index(request):
     else:
         return redirect(splashpage)
 
+def viewEvents(request):
+    """Events View"""
+
+    if request.user.is_authenticated:
+        event_list = Event.objects.order_by('date').filter(user=request.user)
+        context = {
+            'event_list': event_list,
+            'empty_event_list': len(event_list) == 0,
+        }
+        return render(request, "calnote/eventview.html", context)
+    else:
+        return redirect(login_request)
 
 def viewNotes(request):
     """Notes View"""
@@ -280,7 +292,7 @@ def addNewEvent(request):
             newEvent = addEventForm.save(commit=False)		            # New addEvent object
             newEvent.user = request.user
             newEvent.save()
-        return redirect(index)
+        return redirect(viewEvents)
 
         # Display task input form
     if request.method == "GET":
@@ -297,7 +309,7 @@ def deleteEvent(request, event_id):
 
     event = Event.objects.get(eventID=event_id)
     event.delete()									# Remove Event from database
-    return redirect(index)
+    return redirect(viewEvents)
 
 
 def editEvent(request, event_id):
@@ -308,7 +320,7 @@ def editEvent(request, event_id):
         editEventForm = EventForm(request.POST or None, instance=event)
         if editEventForm.is_valid():
             editEventForm.save()
-        return redirect(index)
+        return redirect(viewEvents)
 
     if request.method == "GET":
         context = {
