@@ -24,7 +24,7 @@ class Event(models.Model):
 
     eventID = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    date = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    date = models.DateTimeField(default=timezone.now)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -35,9 +35,9 @@ class Note(models.Model):
     """Note object fields"""
 
     noteID = models.AutoField(primary_key=True)
-    noteTitle = models.CharField(max_length=100, null=True,blank=True)
-    note = models.TextField(blank=True)
-    date = models.DateTimeField(default=timezone.now, null=True,blank=True)
+    noteTitle = models.CharField(max_length=100)
+    note = models.TextField(null=True, blank=True)
+    date = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

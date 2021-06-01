@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from faker import Faker
-from calnote.forms import EventForm, NoteForm
+from calnote.forms import EventForm, NoteForm, TaskForm
 
 fake = Faker()
 
@@ -13,7 +13,7 @@ class TaskFormTest(TestCase):
             'task': '',
             'dueDate': ''
         }
-        form = AddTaskForm(data=data)
+        form = TaskForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_empty(self):
@@ -24,28 +24,28 @@ class TaskFormTest(TestCase):
             'task': '',
             'dueDate': dueDate.strftime("%Y-%m-%d %H:%M:%S")
         }
-        form = AddTaskForm(data=data)
+        form = TaskForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_empty_dueDate(self):
-        """Test form for empty due date"""
+        """Test form for empty task due date"""
 
         data = {
             'task': fake.text()[0:100],
             'dueDate': ''
         }
-        form = AddTaskForm(data=data)
-        self.assertFalse(form.is_valid())
+        form = TaskForm(data=data)
+        self.assertTrue(form.is_valid())
 
     def test_wrong_date_format(self):
-        """Test form for wrong date format"""
+        """Test form for wrong task date format"""
 
         dueDate = timezone.now()
         data = {
             'task': fake.text()[0:100],
             'dueDate': "Not A Date Format"
         }
-        form = AddTaskForm(data=data)
+        form = TaskForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_valid_form(self):
@@ -56,7 +56,7 @@ class TaskFormTest(TestCase):
             'task':  fake.text()[0:100],
             'dueDate': dueDate.strftime("%Y-%m-%d %H:%M:%S")
         }
-        form = AddTaskForm(data=data)
+        form = TaskForm(data=data)
         self.assertTrue(form.is_valid())
     
 
@@ -68,7 +68,7 @@ class EventFormTest(TestCase):
             'name': '',
             'date': ''
         }
-        form = AddEventForm(data=data)
+        form = EventForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_empty(self):
@@ -79,7 +79,7 @@ class EventFormTest(TestCase):
             'name': '',
             'date': date.strftime("%Y-%m-%d %H:%M:%S")
         }
-        form = AddEventForm(data=data)
+        form = EventForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_empty_date(self):
@@ -89,7 +89,7 @@ class EventFormTest(TestCase):
             'name': fake.text()[0:100],
             'date': ''
         }
-        form = AddEventForm(data=data)
+        form = EventForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_wrong_date_format(self):
@@ -100,7 +100,7 @@ class EventFormTest(TestCase):
             'name': fake.text()[0:100],
             'date': "Not A Date Format"
         }
-        form = AddEventForm(data=data)
+        form = EventForm(data=data)
         self.assertFalse(form.is_valid())
 
     def test_valid_form(self):
@@ -111,7 +111,7 @@ class EventFormTest(TestCase):
             'name':  fake.text()[0:100],
             'date': date.strftime("%Y-%m-%d %H:%M:%S")
         }
-        form = AddEventForm(data=data)
+        form = EventForm(data=data)
         self.assertTrue(form.is_valid())
 
 class NoteFormTest(TestCase):
@@ -124,7 +124,7 @@ class NoteFormTest(TestCase):
             'date': ''
         }
         form = NoteForm(data=data)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
     def test_empty_title(self):
         """Test form for empty noteTitle"""
@@ -136,7 +136,7 @@ class NoteFormTest(TestCase):
             'date': date.strftime("%Y-%m-%d %H:%M:%S")
         }
         form = EventForm(data=data)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
     def test_empty_note(self):
         """Test form for empty note"""
