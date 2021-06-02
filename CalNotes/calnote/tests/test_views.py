@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.remote.remote_connection import LOGGER, logging
 from selenium.webdriver.chrome.options import Options
 from calnote.models import Task, Event, Note
+from django.contrib.auth.models import User
 
 fake = Faker()
 
@@ -16,8 +17,10 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
 
     def create_task(self, name, date, isComplete):
         """Utility function for creating task."""
-
-        Task.objects.create(task=name, dueDate=date, isComplete=isComplete)
+        user = User.objects.create(username='testuser')
+        user.set_password('12345')
+        user.save()
+        Task.objects.create(task=name, dueDate=date, isComplete=isComplete, user_id=user.id)
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -102,8 +105,10 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
     def create_event(self, name, date):
         """Utility function for creating event."""
-
-        Event.objects.create(name=name, date=date)
+        user = User.objects.create(username='testuser')
+        user.set_password('12345')
+        user.save()
+        Event.objects.create(name=name, date=date, user_id=user.id)
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -187,8 +192,10 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
     def create_note(self, noteTitle, note, date):
         """Utility function for creating event."""
-
-        Note.objects.create(noteTitle=noteTitle, note=note, date=date)
+        user = User.objects.create(username='testuser')
+        user.set_password('12345')
+        user.save()
+        Note.objects.create(noteTitle=noteTitle, note=note, date=date, user_id=user.id)
 
     def setUp(self):
         """Setup Chrome driver"""
