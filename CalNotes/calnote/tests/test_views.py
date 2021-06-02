@@ -17,10 +17,38 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
 
     def create_task(self, name, date, isComplete):
         """Utility function for creating task."""
-        user = User.objects.create(username='testuser')
-        user.set_password('12345')
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
         user.save()
         Task.objects.create(task=name, dueDate=date, isComplete=isComplete, user_id=user.id)
+
+    def login(self):
+        login_url = "%s%s" % (self.live_server_url, "/login")
+        self.driver.get(login_url)
+        self.driver.implicitly_wait(10)
+
+        # Log In
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
+        user.save()
+
+        usernameField = self.driver.find_element_by_id("id_username")
+        passwordField = self.driver.find_element_by_id("id_password")
+
+        usernameField.clear()
+        passwordField.clear()
+
+        self.driver.implicitly_wait(10)
+
+        usernameField.send_keys(user.username)     
+        passwordField.send_keys('calnote24')   
+
+        # Submit form
+        time.sleep(2)
+        self.driver.find_element_by_css_selector(
+            'button[type="submit"]').click()
+
+        time.sleep(5)
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -35,7 +63,7 @@ class CreateTaskViewTest(StaticLiveServerTestCase):
 
     def test_edit_task(self):
         """Integration test for edit task."""
-
+        self.login()
         # Task to edit
         fakeName = fake.text()[0:100]
         date = datetime.now()
@@ -105,10 +133,39 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
     def create_event(self, name, date):
         """Utility function for creating event."""
-        user = User.objects.create(username='testuser')
-        user.set_password('12345')
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
         user.save()
         Event.objects.create(name=name, date=date, user_id=user.id)
+
+    def login(self):
+        login_url = "%s%s" % (self.live_server_url, "/login")
+        self.driver.get(login_url)
+        self.driver.implicitly_wait(10)
+
+        # Log In
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
+        user.save()
+
+        usernameField = self.driver.find_element_by_id("id_username")
+        passwordField = self.driver.find_element_by_id("id_password")
+
+        usernameField.clear()
+        passwordField.clear()
+
+        self.driver.implicitly_wait(10)
+
+        usernameField.send_keys(user.username)     
+        passwordField.send_keys('calnote24')   
+
+        # Submit form
+        time.sleep(2)
+        self.driver.find_element_by_css_selector(
+            'button[type="submit"]').click()
+
+        time.sleep(5)
+
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -125,7 +182,7 @@ class CreateEventViewTest(StaticLiveServerTestCase):
 
     def test_edit_event(self):
         """Integration test for editing of events."""
-
+        self.login()
         # Create event
         fakeName = fake.text()[0:100]
         date = datetime.now()
@@ -192,10 +249,38 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
     def create_note(self, noteTitle, note, date):
         """Utility function for creating event."""
-        user = User.objects.create(username='testuser')
-        user.set_password('12345')
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
         user.save()
         Note.objects.create(noteTitle=noteTitle, note=note, date=date, user_id=user.id)
+
+    def login(self):
+        login_url = "%s%s" % (self.live_server_url, "/login")
+        self.driver.get(login_url)
+        self.driver.implicitly_wait(10)
+
+        # Log In
+        user = User.objects.create(username='userdemo')
+        user.set_password('calnote24')
+        user.save()
+
+        usernameField = self.driver.find_element_by_id("id_username")
+        passwordField = self.driver.find_element_by_id("id_password")
+
+        usernameField.clear()
+        passwordField.clear()
+
+        self.driver.implicitly_wait(10)
+
+        usernameField.send_keys(user.username)     
+        passwordField.send_keys('calnote24')   
+
+        # Submit form
+        time.sleep(2)
+        self.driver.find_element_by_css_selector(
+            'button[type="submit"]').click()
+
+        time.sleep(5)
 
     def setUp(self):
         """Setup Chrome driver"""
@@ -212,6 +297,8 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
     def test_add_note(self):
         """Integration test for note creation."""
+
+        self.login()
 
         url = "%s%s" % (self.live_server_url, "/newnote")
         self.driver.get(url)
@@ -255,7 +342,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(2)").get_attribute("innerText").strip()
         expectedDate = date.strftime(
-            "%B %#d, %Y, %#I:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
+            "%B %d, %Y, %I:%M ") + ["p.m.", "a.m."][date.strftime("%p") == "AM"]
         self.assertEqual(noteDate, expectedDate)
 
         linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
@@ -271,6 +358,8 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
     def test_edit_note(self):
         """Integration test for editing of notes."""
+
+        self.login()
 
         # Create note
         fakeName = fake.text()[0:100]
@@ -325,7 +414,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
         noteDate = self.driver.find_element_by_css_selector(
             "td:nth-of-type(2)").get_attribute("innerText").strip()
         expectedDate = newDate.strftime(
-            "%B %#d, %Y, %#I:%M ") + ["p.m.", "a.m."][newDate.strftime("%p") == "AM"]
+            "%B %d, %Y, %I:%M ") + ["p.m.", "a.m."][newDate.strftime("%p") == "AM"]
         self.assertEqual(noteDate, expectedDate)
 
         linkButton = self.driver.find_element_by_css_selector("td:nth-of-type(1)")
@@ -341,6 +430,7 @@ class CreateNoteViewTest(StaticLiveServerTestCase):
 
     def test_remove_note(self):
         """Integration test for note deletion."""
+        self.login()
 
         # Create note
         fakeName = fake.text()[0:100]
