@@ -72,7 +72,7 @@ class EventFormTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_empty(self):
-        """Test form for empty task name"""
+        """Test form for empty event name"""
 
         date = timezone.now()
         data = {
@@ -104,7 +104,7 @@ class EventFormTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_valid_form(self):
-        """Test form for valid task details"""
+        """Test form for valid event details"""
 
         date = timezone.now()
         data = {
